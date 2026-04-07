@@ -1,8 +1,41 @@
 # ⚡ Solar Energy Dashboard
 
+<p align="center">
+  A modern, interactive React dashboard to visualize and compare solar energy production with real-time insights and a premium UI.
+</p>
+
+---
+
+## 🚀 Live Demo
+
+👉 https://effulgent-pegasus-18f686.netlify.app/
+
+## 📂 Repository
+
+👉 https://github.com/CAPTAjGhost101/SolarPredictionDash
+
+---
+
 ## ✨ Overview
 
-This project is a **solar energy monitoring dashboard** that provides a clear visualization of energy production. It focuses on **real-time insights, comparison analysis, and modern UI design**, simulating a real-world renewable energy system.
+This project is a **solar energy monitoring dashboard** designed to simulate a real-world renewable energy system. It enables users to analyze **energy production, compare locations, and visualize data interactively** through a modern and responsive interface.
+
+---
+
+## 🆕 Version
+
+### 🚀 v2.0 (Latest)
+
+- 🗺️ Introduced **map-based layout** for better visualization
+- 📍 Enhanced **location comparison functionality**
+- 🎛️ Added **interactive buttons and controls**
+- ✨ Improved **animations and transitions**
+- 🔤 Refined **typography and overall UI polish**
+
+### v1.0
+
+- Basic dashboard with charts
+- Initial energy tracking system
 
 ---
 
@@ -12,21 +45,22 @@ This project is a **solar energy monitoring dashboard** that provides a clear vi
 
 - Interactive charts using Recharts
 - Actual vs Estimated energy comparison
-- Tooltip-enabled insights for better analysis
+- Tooltip-based data insights
 
 ### 🎨 UI / UX
 
-- Clean, minimal, modern design
-- Light & Dark mode toggle
+- Clean, minimal, modern interface
+- Light & Dark mode support
 - Fully responsive (mobile + desktop)
-- Smooth transitions and layout
+- Smooth animations and transitions
 
 ### ⚙️ Functionality
 
 - Dynamic data rendering
 - Component-based architecture
 - Optimized chart performance
-- Loading and conditional states
+- Conditional rendering (loading states)
+- Map-based UI interaction (v2.0)
 
 ---
 
@@ -46,7 +80,7 @@ This project is a **solar energy monitoring dashboard** that provides a clear vi
 ## 📸 Preview
 
 <p align="center">
-  <img src="./preview.png" alt="Dashboard Preview" width="90%" />
+  <img src="./preview.png" alt="Solar Dashboard Preview" width="90%" />
 </p>
 
 ---
@@ -55,9 +89,9 @@ This project is a **solar energy monitoring dashboard** that provides a clear vi
 
 ```bash
 src/
- ├── components/   # Reusable UI components (charts, cards)
+ ├── components/   # Reusable UI components (charts, cards, controls)
  ├── pages/        # Main dashboard layout
- ├── hooks/        # Custom hooks (if any)
+ ├── hooks/        # Custom hooks
  ├── utils/        # Helper functions
  ├── assets/       # Images & icons
  └── App.jsx
@@ -78,7 +112,7 @@ npm run dev
 
 ## 🌐 Deployment
 
-Deployed using **Vercel** with seamless GitHub integration.
+Deployed using **Vercel** with GitHub integration for continuous deployment.
 
 ```bash
 npm run build
@@ -88,20 +122,20 @@ npm run build
 
 ## 💡 Key Highlights
 
-- Built a **production-ready dashboard UI**
-- Focused on **data visualization & user experience**
-- Implemented **modern frontend best practices**
-- Designed for **scalability and clean structure**
+- Built a **production-ready dashboard with modern UI**
+- Implemented **interactive data visualization and comparison logic**
+- Designed a **map-integrated interface for better user experience**
+- Focused on **scalable architecture and clean code practices**
 
 ---
 
 ## 📚 Key Learnings
 
-- Structuring scalable React applications
-- Working with chart libraries for real-world dashboards
-- Improving UI/UX using Tailwind CSS
-- Understanding deployment workflows
-- Writing clean and maintainable code
+- Building scalable React applications
+- Implementing real-world data visualization
+- Enhancing UI/UX using Tailwind CSS
+- Managing project structure and performance
+- Deploying applications using modern workflows
 
 ---
 
@@ -109,14 +143,14 @@ npm run build
 
 - 🔌 Real-time API integration
 - 📊 Advanced analytics & insights
-- 🔔 Smart alerts system
+- 🔔 Smart alert system
 - 📅 Historical data tracking
 
 ---
 
 ## 🤝 Contributing
 
-Feel free to fork this repository and contribute.
+Contributions are welcome! Feel free to fork and submit a pull request.
 
 ---
 
@@ -127,5 +161,5 @@ MIT License © 2026
 ---
 
 <p align="center">
-  Made with ⚡ using React & Tailwind
+  Made with ⚡ using React, Tailwind & modern web practices
 </p>

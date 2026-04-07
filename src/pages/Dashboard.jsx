@@ -1,7 +1,6 @@
 import Card from "../components/ui/Card";
 import EnergyChart from "../components/ui/EnergyChart";
 import { calculateMonthlyEnergy, calculateYearlyTotal, calculateSavings, getOptimalTilt, getDirectionEfficiency } from "../utils/solarCalc";
-
 import { calculateAdvancedROI } from "../utils/solarCalc";
 import { generateSavingsData } from "../utils/solarCalc";
 import SavingsChart from "../components/ui/SavingsChart";
@@ -13,6 +12,8 @@ import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import jsPDF from "jspdf";
 import { getSolarData } from "../utils/solarWeather";
+import { Save, Download, Zap, IndianRupee, Trash2, GitCompare, MapPin, Search, Sun, BarChart3, Clock, TrendingUp, AlertTriangle, Compass } from "lucide-react";
+import Skeleton from "../components/ui/Skeleton";
 
 export default function Dashboard() {
   // STATES
@@ -21,7 +22,6 @@ export default function Dashboard() {
   const [usage, setUsage] = useState(300);
   const [systemSize, setSystemSize] = useState(1);
   const [isOnGrid, setIsOnGrid] = useState(true);
-
   const [lat, setLat] = useState(28.6);
   const [lon, setLon] = useState(77.2);
   const [suggestions, setSuggestions] = useState([]);
@@ -29,6 +29,7 @@ export default function Dashboard() {
   const debounceRef = useRef(null);
   const [azimuth, setAzimuth] = useState(180);
   const [tiltAngle, setTiltAngle] = useState(25);
+
   useEffect(() => {
     const optimalTilt = Math.round(lat * 0.9);
     const optimalAzimuth = 180;
@@ -45,6 +46,11 @@ export default function Dashboard() {
   const [compareList, setCompareList] = useState([]);
   const [solarHistory, setSolarHistory] = useState([]);
   const [dataMode, setDataMode] = useState("real"); // "real" or "estimated"
+  const [yearsRange, setYearsRange] = useState(10);
+  const [loading, setLoading] = useState(true);
+  const metricsRef = useRef(null);
+  const [highlightMetrics, setHighlightMetrics] = useState(false);
+
   //SEARCH
   const handleSearch = (value) => {
     setLocation(value);
@@ -84,12 +90,23 @@ export default function Dashboard() {
     usage,
     isOnGrid,
   });
-  const savingsData = generateSavingsData(roi.monthlySavings, roi.totalCost, 10);
+
+  useEffect(() => {
+    if (!roi?.paybackYears) return;
+
+    if (roi.paybackYears <= 10) setYearsRange(10);
+    else if (roi.paybackYears <= 25) setYearsRange(25);
+    else if (roi.paybackYears <= 50) setYearsRange(50);
+    else setYearsRange(100);
+  }, [roi.paybackYears]);
+
+  const savingsData = generateSavingsData(roi.monthlySavings, roi.totalCost, yearsRange);
   const azimuthDiff = Math.abs(azimuth - 180);
   const azimuthColor = getSliderColor(azimuthDiff);
   const optimalTilt = Math.round(lat * 0.9);
   const tiltDiff = Math.abs(tiltAngle - optimalTilt);
   const tiltColor = getSliderColor(tiltDiff);
+  const [showMap, setShowMap] = useState(false);
 
   // HELPER FUNCTIONS
   function getSliderColor(diff) {
@@ -120,6 +137,7 @@ export default function Dashboard() {
       id: Date.now(),
       name: customName || location || "Unnamed Setup",
       lat,
+      lon,
       systemSize,
       usage,
       rate,
@@ -250,9 +268,19 @@ export default function Dashboard() {
 
   useEffect(() => {
     async function fetchData() {
-      const data = await getSolarData(lat, lon);
-      setSolarHistory(data);
-      console.log("Solar API Data:", data);
+      setLoading(true); // start loading
+
+      try {
+        const data = await getSolarData(lat, lon);
+        setSolarHistory(data);
+      } catch (e) {
+        console.error(e);
+      }
+
+      // smooth UX delay
+      setTimeout(() => {
+        setLoading(false);
+      }, 500);
     }
 
     fetchData();
@@ -276,26 +304,48 @@ export default function Dashboard() {
     }));
   }
 
-  const weatherBasedData = solarHistory.length > 0 ? getMonthlyFromDaily(solarHistory) : monthlyData;
-  console.log("Weather Data:", weatherBasedData); // The Real Data
+  const baseWeatherData = solarHistory.length > 0 ? getMonthlyFromDaily(solarHistory) : normalizedEstimatedData;
+
+  const weatherBasedData = baseWeatherData.map((item) => ({
+    ...item,
+    energy: Math.round(item.energy * systemSize),
+  }));
 
   const finalChartData = dataMode === "real" ? weatherBasedData : normalizedEstimatedData; // The Data Switching(Real or Estimated)
 
+  //Scroll Clicking
+  const scrollToMetrics = () => {
+    metricsRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+
+    setHighlightMetrics(true);
+
+    setTimeout(() => {
+      setHighlightMetrics(false);
+    }, 1200);
+  };
   return (
     <div className="p-8 space-y-10 max-w-7xl mx-auto">
       <div className="grid grid-cols-2 gap-6">
         {/* INPUT PANEL */}
-        <Card className="transition-all duration-300">
+        <Card className="transition-all duration-300 hover:-translate-y-[2px] hover:shadow-lg">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold tracking-tight">Solar Setup</h2>
+            <h2 className="text-lg font-semibold tracking-tight flex items-center gap-2">
+              <Sun size={18} />
+              Solar Setup
+            </h2>
 
             <div className="flex gap-2">
-              <button onClick={handleSaveLocation} className="px-3 py-2 rounded-lg bg-[var(--primary)] text-white hover:scale-[1.03] active:scale-[0.97] transition-all">
-                💾 Save
+              <button onClick={handleSaveLocation} className="px-3 py-2 rounded-lg bg-[var(--primary)] text-white flex items-center gap-2 hover:opacity-90 active:scale-[0.97] active:shadow-inner transition-all">
+                <Save size={16} />
+                Save
               </button>
 
-              <button onClick={handleExport} className="px-3 py-2 rounded-lg bg-green-600 text-white hover:scale-[1.03] active:scale-[0.97] transition-all">
-                📄 Export
+              <button onClick={handleExport} className="px-3 py-2 rounded-lg bg-green-600 text-white flex items-center gap-2 hover:opacity-90 active:scale-[0.97] active:shadow-inner transition-all">
+                <Download size={16} />
+                Export
               </button>
             </div>
           </div>
@@ -304,15 +354,20 @@ export default function Dashboard() {
           <div className="flex items-center gap-3 mb-6">
             <label className="text-sm text-[var(--text-muted)]">System Type:</label>
 
-            <button onClick={() => setIsOnGrid(true)} className={`px-3 py-1 rounded-lg ${isOnGrid ? "bg-[var(--primary)] text-white" : "border border-[var(--border)]"}`}>
+            <button onClick={() => setIsOnGrid(true)} className={`px-3 py-1 rounded-lg ${isOnGrid ? "bg-[var(--primary)] text-white" : "border border-[var(--border)]"} active:scale-[0.97] active:shadow-inner`}>
               On-Grid
             </button>
 
-            <button onClick={() => setIsOnGrid(false)} className={`px-3 py-1 rounded-lg ${!isOnGrid ? "bg-[var(--primary)] text-white" : "border border-[var(--border)]"}`}>
+            <button onClick={() => setIsOnGrid(false)} className={`px-3 py-1 rounded-lg ${!isOnGrid ? "bg-[var(--primary)] text-white" : "border border-[var(--border)]"} active:scale-[0.97] active:shadow-inner`}>
               Off-Grid
             </button>
 
-            {roi.surplusEnergy > 0 && !isOnGrid && <p className="text-xs text-red-500 mt-1">⚠ {roi.surplusEnergy} kWh wasted due to off-grid setup</p>}
+            {roi.surplusEnergy > 0 && !isOnGrid && (
+              <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
+                <AlertTriangle size={14} />
+                {roi.surplusEnergy} kWh wasted due to off-grid setup
+              </p>
+            )}
           </div>
 
           {/* MAIN GRID */}
@@ -328,7 +383,19 @@ export default function Dashboard() {
               <div className="relative z-20">
                 <label className="text-sm text-[var(--text-muted)]">Enter your place:</label>
 
-                <div className="flex gap-2">
+                <div className="flex gap-2 relative">
+                  {showMap && (
+                    <div className="absolute top-full left-0 w-full mt-2 z-50">
+                      <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl shadow-lg overflow-hidden">
+                        <div className="h-64">
+                          <MapPicker setLat={setLat} setLon={setLon} setLocation={setLocation} onSelect={() => setShowMap(false)} />
+                        </div>
+
+                        <div className="p-2 text-xs text-[var(--text-muted)] text-center">Click on map to select location</div>
+                      </div>
+                    </div>
+                  )}
+
                   <input
                     value={location}
                     onChange={(e) => handleSearch(e.target.value)}
@@ -337,7 +404,7 @@ export default function Dashboard() {
                         const results = await searchLocations(location);
                         if (results.length > 0) {
                           setLat(results[0].lat);
-                          setLon(results[0].lon);
+                          setLon(results[0].lng);
                           setLocation(results[0].name);
                           setShowDropdown(false);
                         }
@@ -352,14 +419,18 @@ export default function Dashboard() {
                       const results = await searchLocations(location);
                       if (results.length > 0) {
                         setLat(results[0].lat);
-                        setLon(results[0].lon);
+                        setLon(results[0].lng);
                         setLocation(results[0].name);
                         setShowDropdown(false);
                       }
                     }}
-                    className="mt-1 px-3 py-2 rounded-lg bg-[var(--primary)] text-white hover:opacity-90 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                    className="mt-1 px-3 py-2 rounded-lg bg-[var(--primary)] text-white flex items-center gap-2 hover:opacity-90 active:scale-[0.97] active:shadow-inner transition-all"
                   >
-                    🔍
+                    <Search size={16} />
+                  </button>
+
+                  <button onClick={() => setShowMap((prev) => !prev)} className="mt-1 px-3 py-2 rounded-lg border border-[var(--border)] hover:bg-[var(--border)]">
+                    <MapPin size={16} />
                   </button>
                 </div>
 
@@ -386,13 +457,13 @@ export default function Dashboard() {
 
               {/* Rate */}
               <div>
-                <label className="text-sm text-[var(--text-muted)]">Electricity Rate (₹/kWh)</label>
+                <label className="text-sm text-[var(--text-muted)]">Electricity Rate (₹/kWh or Units)</label>
                 <input type="number" value={rate} onChange={(e) => setRate(Number(e.target.value))} className="input mt-1" />
               </div>
 
               {/* Usage */}
               <div>
-                <label className="text-sm text-[var(--text-muted)]">Monthly Usage (kWh)</label>
+                <label className="text-sm text-[var(--text-muted)]">Monthly Usage (kWh or Units)</label>
                 <input type="number" value={usage} onChange={(e) => setUsage(Number(e.target.value))} className="input mt-1" />
               </div>
 
@@ -440,12 +511,25 @@ export default function Dashboard() {
                   }}
                 />
               </div>
+              <button
+                onClick={scrollToMetrics}
+                className="
+    w-full mt-4 px-4 py-2 rounded-lg 
+    bg-[var(--primary)] text-white 
+    flex items-center justify-center gap-2
+    hover:opacity-90 active:scale-[0.97] active:shadow-inner 
+    transition-all
+  "
+              >
+                <TrendingUp size={16} />
+                Check Metrics
+              </button>
             </div>
           </div>
         </Card>
 
         {/* SAVED LOCATIONS */}
-        <Card className="transition-all duration-300">
+        <Card className="transition-all duration-300 hover:-translate-y-[2px] hover:shadow-lg">
           <h2 className="text-lg font-semibold mb-4 tracking-tight">Saved Locations</h2>
           {/* FILTER PILLS */}
           <div className="flex gap-2 mb-3">
@@ -453,30 +537,39 @@ export default function Dashboard() {
               onClick={() => setSortBy("savings")}
               className={`
       px-3 py-1 rounded-full text-sm border transition-all duration-150
-      ${sortBy === "savings" ? "bg-[var(--primary)] text-white scale-[1.05]" : "border-[var(--border)] hover:scale-[1.05]"}
+      ${sortBy === "savings" ? "bg-[var(--primary)] text-white hover:opacity-90" : "border-[var(--border)] active:scale-[0.97] active:shadow-inner"}
     `}
             >
-              💰 Savings
+              <span className="flex items-center gap-1">
+                <IndianRupee size={14} />
+                Savings
+              </span>
             </button>
 
             <button
               onClick={() => setSortBy("output")}
               className={`
       px-3 py-1 rounded-full text-sm border transition-all duration-150
-      ${sortBy === "output" ? "bg-[var(--primary)] text-white scale-[1.05]" : "border-[var(--border)] hover:scale-[1.05]"}
+      ${sortBy === "output" ? "bg-[var(--primary)] text-white hover:opacity-90" : "border-[var(--border)] active:scale-[0.97] active:shadow-inner"}
     `}
             >
-              ⚡ Output
+              <span className="flex items-center gap-1">
+                <Zap size={14} />
+                Output
+              </span>
             </button>
 
             <button
               onClick={() => setSortBy("payback")}
               className={`
       px-3 py-1 rounded-full text-sm border transition-all duration-150
-      ${sortBy === "payback" ? "bg-[var(--primary)] text-white scale-[1.05]" : "border-[var(--border)] hover:scale-[1.05]"}
+      ${sortBy === "payback" ? "bg-[var(--primary)] text-white hover:opacity-90" : "border-[var(--border)] active:scale-[0.97] active:shadow-inner"}
     `}
             >
-              ⏱ Payback
+              <span className="flex items-center gap-1">
+                <Clock size={14} />
+                Payback
+              </span>
             </button>
           </div>
           <p className="text-xs text-[var(--text-muted)] mb-3">Ranked by estimated annual savings (default)</p>
@@ -494,14 +587,14 @@ export default function Dashboard() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 0.25 }}
+                    transition={{ duration: 0.2, ease: "easeOut" }}
                     onClick={() => handleLoadLocation(item)}
-                    whileHover={{ scale: 1.02 }}
+                    whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.98 }}
                     className={`
   p-4 rounded-xl border cursor-pointer transition-all duration-100
   ${rankColor}
-  ${isActive ? "ring-2 ring-[var(--primary)] scale-[1.01]" : ""}
+  ${isActive ? "ring-2 ring-[var(--primary)] shadow-[0_0_20px_rgba(0,0,0,0.05)] scale-[1.01]" : ""}
   ${isCompare ? "ring-2 ring-blue-400" : "hover:shadow-sm"}
 `}
                   >
@@ -551,25 +644,29 @@ export default function Dashboard() {
                       </div>
 
                       {/* Delete Button */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteLocation(item.id);
-                        }}
-                        className="text-xs text-red-500 hover:underline"
-                      >
-                        Delete
-                      </button>
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteLocation(item.id);
+                          }}
+                          className="text-xs text-red-500 hover:underline flex items-center gap-1 active:scale-[0.97] active:shadow-inner"
+                        >
+                          <Trash2 size={14} />
+                          Delete
+                        </button>
 
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleCompare(item);
-                        }}
-                        className="text-xs text-blue-500 hover:underline ml-2"
-                      >
-                        {compareList.find((i) => i.id === item.id) ? "Remove" : "Compare"}
-                      </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleCompare(item);
+                          }}
+                          className="text-xs text-blue-500 hover:underline ml-2 flex items-center gap-1 active:scale-[0.97] active:shadow-inner"
+                        >
+                          <GitCompare size={14} />
+                          {compareList.find((i) => i.id === item.id) ? "Remove" : "Compare"}
+                        </button>
+                      </div>
                     </div>
                   </motion.div>
                 );
@@ -582,7 +679,7 @@ export default function Dashboard() {
         {compareList.length === 2 && (
           <Card>
             <h2 className="text-lg font-semibold mb-4 tracking-tight">Compare Locations</h2>
-
+            <p className="text-xs text-[var(--text-muted)] mb-3">Based on estimated monthly savings</p>
             {/* Find Best */}
             {(() => {
               const [a, b] = compareList;
@@ -592,63 +689,115 @@ export default function Dashboard() {
 
                 const yearlyTotal = calculateYearlyTotal(monthlyData);
                 const monthlyAvg = Math.round(yearlyTotal / 12);
-                const savings = monthlyAvg * item.rate;
 
-                return { monthlyAvg, savings };
+                const roiData = calculateAdvancedROI({
+                  systemSize: item.systemSize,
+                  rate: item.rate,
+                  monthlyEnergy: monthlyAvg, // ✅ correct now
+                  usage: item.usage,
+                  isOnGrid: item.isOnGrid,
+                });
+
+                return {
+                  monthlyAvg,
+                  savings: roiData.monthlySavings,
+                  payback: roiData.paybackYears,
+                  coverage: Math.min(100, Math.round((monthlyAvg / item.usage) * 100)),
+                };
               };
 
               const dataA = calcData(a);
               const dataB = calcData(b);
 
               const better = dataA.savings > dataB.savings ? a : b;
+              const worse = dataA.savings > dataB.savings ? b : a;
+
               const diffSavings = Math.abs(dataA.savings - dataB.savings);
               const diffOutput = Math.abs(dataA.monthlyAvg - dataB.monthlyAvg);
 
-              const best = compareList.reduce((prev, curr) => {
-                const prevScore = prev.systemSize * prev.rate;
-                const currScore = curr.systemSize * curr.rate;
-                return currScore > prevScore ? curr : prev;
-              }, compareList[0]);
+              const percentBetter = Math.round((diffSavings / Math.max(dataA.savings, dataB.savings)) * 100);
+
+              let reason = "";
+
+              const betterData = better.id === a.id ? dataA : dataB;
+              const worseData = better.id === a.id ? dataB : dataA;
+
+              // Output difference %
+              const outputDiffPercent = Math.round(((betterData.monthlyAvg - worseData.monthlyAvg) / worseData.monthlyAvg) * 100);
+
+              // Payback difference
+              const paybackDiff = Math.round(worseData.payback - betterData.payback);
+
+              // Build reason string
+              const reasons = [];
+
+              if (outputDiffPercent > 5) {
+                reasons.push(`⚡ +${outputDiffPercent}% higher output`);
+              }
+
+              if (paybackDiff > 0) {
+                reasons.push(`⏳ ${paybackDiff} yrs faster payback`);
+              }
+
+              if (diffSavings > 0) {
+                reasons.push(`₹${diffSavings}/month more savings`);
+              }
+
+              reason = reasons.join(" and ");
 
               return (
                 <div className="grid grid-cols-2 gap-6">
-                  <div className="mb-4 p-3 rounded-lg bg-[var(--border)] text-sm">
-                    <p className="font-medium">{better.name} performs better</p>
+                  <div className="mb-5 p-5 rounded-2xl bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 shadow-sm">
+                    <p className="font-semibold text-green-700 flex items-center gap-2">🏆 {better.name} is the better choice</p>
 
-                    <p className="text-xs text-[var(--text-muted)] mt-1">
-                      +₹{diffSavings}/month (₹{diffSavings * 12} yearly) • +{diffOutput} kWh
+                    <p className="text-sm mt-1 text-green-700">
+                      +₹{diffSavings}/month ({percentBetter}% higher savings)
                     </p>
+
+                    <p className="text-xs text-[var(--text-muted)] mt-2">{reason || "Better overall performance based on your setup"}</p>
                   </div>
+
                   {compareList.map((item) => {
-                    const isBest = best.id === item.id;
+                    const isBest = better.id === item.id;
 
-                    const monthlyData = calculateMonthlyEnergy(item.systemSize, item.lat, item.azimuth, item.tiltAngle);
-
-                    const yearlyTotal = calculateYearlyTotal(monthlyData);
-                    const monthlyAvg = Math.round(yearlyTotal / 12);
-                    const savings = monthlyAvg * item.rate;
+                    const { monthlyAvg, savings, payback, coverage } = calcData(item);
 
                     return (
                       <div
                         key={item.id}
                         className={`
-                  p-5 rounded-2xl border transition-all
-                  ${isBest ? "border-green-500 bg-green-50" : "border-[var(--border)]"}
-                `}
+        p-5 rounded-2xl border transition-all duration-200
+        ${isBest ? "border-green-500 bg-green-50 shadow-md" : "border-[var(--border)] hover:shadow-sm"}
+      `}
                       >
-                        {/* Header */}
+                        {/* HEADER */}
                         <div className="flex justify-between items-center">
                           <p className="font-semibold">{item.name}</p>
 
-                          {isBest && <span className="text-xs bg-green-500 text-white px-2 py-1 rounded-full">🏆 Best</span>}
+                          {isBest && <span className="text-xs bg-green-500 text-white px-2 py-1 rounded-full">Best</span>}
                         </div>
 
-                        {/* Data */}
-                        <div className="mt-4 space-y-2 text-sm">
-                          <p>⚡ Output: {monthlyAvg} kWh</p>
-                          <p>💰 Savings: ₹{savings}</p>
-                          <p>📐 Tilt: {item.tiltAngle}°</p>
-                          <p>🧭 Direction: {getDirectionLabel(item.azimuth)}</p>
+                        {/* METRICS */}
+                        <div className="mt-4 space-y-3 text-sm">
+                          <div className="flex justify-between">
+                            <span>⚡ Output</span>
+                            <span className={item.id === better.id ? "text-green-600 font-medium" : "text-red-500"}>{monthlyAvg} kWh</span>
+                          </div>
+
+                          <div className="flex justify-between">
+                            <span>💰 Savings</span>
+                            <span className={item.id === better.id ? "text-green-600 font-medium" : "text-red-500"}>₹{savings}</span>
+                          </div>
+
+                          <div className="flex justify-between">
+                            <span>📊 Coverage</span>
+                            <span>{coverage}%</span>
+                          </div>
+
+                          <div className="flex justify-between">
+                            <span>⏳ Payback</span>
+                            <span>{payback} yrs</span>
+                          </div>
                         </div>
                       </div>
                     );
@@ -658,93 +807,118 @@ export default function Dashboard() {
             })()}
           </Card>
         )}
-
-        {/* MAP */}
-        <Card className="transition-all duration-300">
-          <h2 className="text-lg font-semibold mb-4">Select Location on Map</h2>
-          <MapPicker setLat={setLat} setLon={setLon} setLocation={setLocation} />
-        </Card>
       </div>
 
       {/* METRICS */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-        <Card className="transition-all duration-300">
+      <div
+        ref={metricsRef}
+        className={`
+    grid grid-cols-2 md:grid-cols-4 gap-6
+    transition-all duration-500
+    ${highlightMetrics ? "shadow-[0_0_20px_rgba(245,158,11,0.15)] scale-[1.01] brightness-[1.02]" : ""}
+  `}
+      >
+        <Card className="transition-all duration-300  hover:-translate-y-[2px] hover:shadow-lg">
           <p className="text-sm text-[var(--text-muted)] tracking-tight">Direction Efficiency</p>
-          <h2 className="text-3xl font-semibold">{Math.round(getDirectionEfficiency(azimuth) * 100)}%</h2>
+          {loading ? <Skeleton className="w-20 h-8" /> : <h2 className="text-3xl font-semibold">{Math.round(getDirectionEfficiency(azimuth) * 100)}%</h2>}
         </Card>
 
-        <Card className="transition-all duration-300">
+        <Card className="transition-all duration-300 hover:-translate-y-[2px] hover:shadow-lg">
           <p className="text-sm text-[var(--text-muted)] tracking-tight">Monthly Output</p>
-          <h2 className="text-3xl font-semibold mt-1 tracking-tight">{monthlyAvg} kWh</h2>
+          {loading ? <Skeleton className="w-20 h-8" /> : <h2 className="text-3xl font-semibold mt-1 tracking-tight">{monthlyAvg} kWh</h2>}
         </Card>
 
-        <Card className="transition-all duration-300">
+        <Card className="transition-all duration-300 hover:-translate-y-[2px] hover:shadow-lg">
           <p className="text-sm text-[var(--text-muted)] tracking-tight">Yearly Output</p>
-          <h2 className="text-3xl font-semibold mt-1 tracking-tight">{yearlyTotal} kWh</h2>
+          {loading ? <Skeleton className="w-20 h-8" /> : <h2 className="text-3xl font-semibold mt-1 tracking-tight">{yearlyTotal} kWh</h2>}
         </Card>
 
-        <Card className="transition-all duration-300">
+        <Card className="transition-all duration-300 hover:-translate-y-[2px] hover:shadow-lg">
           <p className="text-xs uppercase tracking-wide text-[var(--text-muted)] tracking-tight">Optimal Tilt</p>
-
-          <h2 className="text-3xl font-semibold mt-1 tracking-tight">{tilt}°</h2>
+          {loading ? <Skeleton className="w-20 h-8" /> : <h2 className="text-3xl font-semibold mt-1 tracking-tight">{tilt}°</h2>}
         </Card>
 
-        <Card className="transition-all duration-300">
-          <p className="text-sm text-[var(--text-muted)]tracking-tight">Optimal Direction</p>
-          <h2 className="text-3xl font-semibold mt-1 tracking-tight">{getDirectionLabel(180)} (180°)</h2>
+        <Card className="transition-all duration-300 hover:-translate-y-[2px] hover:shadow-lg">
+          <p className="text-sm text-[var(--text-muted)] tracking-tight">Optimal Direction</p>
+          {loading ? <Skeleton className="w-20 h-8" /> : <h2 className="text-3xl font-semibold mt-1 tracking-tight">{getDirectionLabel(180)} (180°)</h2>}
         </Card>
 
-        <Card className="transition-all duration-300">
+        <Card className="transition-all duration-300 hover:-translate-y-[2px] hover:shadow-lg">
           <p className="text-sm text-[var(--text-muted)] tracking-tight">Usage Covered</p>
-          <h2 className="text-3xl font-semibold mt-1 tracking-tight">{coverage}%</h2>
+          {loading ? <Skeleton className="w-20 h-8" /> : <h2 className="text-3xl font-semibold mt-1 tracking-tight">{coverage}%</h2>}
         </Card>
 
-        <Card className="transition-all duration-300">
+        <Card className="transition-all duration-300 hover:-translate-y-[2px] hover:shadow-lg">
           <p className="text-sm text-[var(--text-muted)] tracking-tight">Used Energy</p>
-          <h2 className="text-3xl font-semibold mt-1 tracking-tight">{roi.usedEnergy} kWh</h2>
+          {loading ? <Skeleton className="w-20 h-8" /> : <h2 className="text-3xl font-semibold mt-1 tracking-tight">{roi.usedEnergy} kWh</h2>}
         </Card>
 
-        <Card className="transition-all duration-300">
+        <Card className="transition-all duration-300 hover:-translate-y-[2px] hover:shadow-lg">
           <p className="text-sm text-[var(--text-muted)] tracking-tight">Surplus Energy</p>
-          <h2 className="text-3xl font-semibold mt-1 tracking-tight">{roi.surplusEnergy} kWh</h2>
+          {loading ? <Skeleton className="w-20 h-8" /> : <h2 className="text-3xl font-semibold mt-1 tracking-tight">{roi.surplusEnergy} kWh</h2>}
         </Card>
 
         <Card>
           <p className="text-xs uppercase tracking-wide text-[var(--text-muted)]">Monthly Savings</p>
 
-          <h2 className="text-3xl font-semibold mt-1 tracking-tight">₹{roi.monthlySavings}</h2>
+          {loading ? (
+            <div className="mt-2 space-y-2">
+              <Skeleton className="w-28 h-8" />
+              <Skeleton className="w-24 h-4" />
+            </div>
+          ) : (
+            <>
+              <h2 className="text-3xl font-semibold mt-1 tracking-tight">₹{roi.monthlySavings}</h2>
 
-          <p className="text-xs text-[var(--text-muted)] mt-1 text-green-500">₹{roi.monthlySavings * 12} yearly</p>
+              <p className="text-xs text-[var(--text-muted)] mt-1 text-green-500">₹{roi.monthlySavings * 12} yearly</p>
+            </>
+          )}
         </Card>
 
-        <Card className="transition-all duration-300">
+        <Card className="transition-all duration-300 hover:-translate-y-[2px] hover:shadow-lg">
           <p className="text-sm text-[var(--text-muted)] tracking-tight">Payback Period</p>
-          <h2 className="text-3xl font-semibold mt-1 tracking-tight">{roi.paybackYears} yrs</h2>
-          <p className="text-xs text-[var(--text-muted)]">~{roi.paybackMonths} months</p>
+
+          {loading ? (
+            <div className="mt-2 space-y-2">
+              <Skeleton className="w-28 h-8" />
+              <Skeleton className="w-24 h-4" />
+            </div>
+          ) : (
+            <>
+              <h2 className="text-3xl font-semibold mt-1 tracking-tight">{roi.paybackYears} yrs</h2>
+              <p className="text-xs text-[var(--text-muted)]">~{roi.paybackMonths} months</p>
+            </>
+          )}
         </Card>
       </div>
 
       {/* CHART */}
-      <Card className="transition-all duration-300">
+      <Card className="transition-all duration-300 hover:-translate-y-[2px] hover:shadow-lg">
         <div className="flex gap-2 mb-3">
           <button
             onClick={() => setDataMode("real")}
             className={`
       px-3 py-1 rounded-full text-xs border transition-all duration-150
-      ${dataMode === "real" ? "bg-[var(--primary)] text-white scale-[1.05]" : "border-[var(--border)] hover:scale-[1.05]"}
+      ${dataMode === "real" ? "bg-[var(--primary)] text-white hover:opacity-90" : "border-[var(--border)] active:scale-[0.97] active:shadow-inner"}
     `}
           >
-            ☀️ Real Data
+            <span className="flex items-center gap-1">
+              <Sun size={14} />
+              Real Data
+            </span>
           </button>
 
           <button
             onClick={() => setDataMode("estimated")}
             className={`
       px-3 py-1 rounded-full text-xs border transition-all duration-150
-      ${dataMode === "estimated" ? "bg-[var(--primary)] text-white scale-[1.05]" : "border-[var(--border)] hover:scale-[1.05]"}
+      ${dataMode === "estimated" ? "bg-[var(--primary)] text-white hover:opacity-90" : "border-[var(--border)] active:scale-[0.97] active:shadow-inner"}
     `}
           >
-            📊 Estimated
+            <span className="flex items-center gap-1">
+              <BarChart3 size={14} />
+              Estimated
+            </span>
           </button>
         </div>
         <p className="text-xs text-[var(--text-muted)] mb-2">{dataMode === "real" ? "Based on last year's actual sunlight data" : "Based on calculated solar model"}</p>
@@ -756,15 +930,30 @@ export default function Dashboard() {
           <p className="text-sm font-medium">{yearlyTotal} kWh/year</p>
         </div>
 
-        <EnergyChart data={finalChartData} />
+        {loading ? <Skeleton className="w-full h-64" /> : <EnergyChart data={finalChartData} />}
       </Card>
 
-      <Card className="transition-all duration-300">
+      <div className="flex gap-2 mb-3">
+        {[10, 25, 50, 100].map((year) => (
+          <button
+            key={year}
+            onClick={() => setYearsRange(year)}
+            className={`
+        px-3 py-1 rounded-full text-xs border transition-all duration-150
+        ${yearsRange === year ? "bg-[var(--primary)] text-white scale-[1.05]" : "border-[var(--border)] hover:opacity-90 active:scale-[0.97] active:shadow-inner"}
+      `}
+          >
+            {year} yrs
+          </button>
+        ))}
+      </div>
+
+      <Card className="transition-all duration-300  hover:-translate-y-[2px] hover:shadow-lg">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold tracking-tight">Savings Over Time</h2>
           <span className="text-sm text-[var(--text-muted)]">10 Year Projection</span>
         </div>
-        <SavingsChart data={savingsData} />
+        {loading ? <Skeleton className="skeleton w-full h-64" /> : <SavingsChart data={savingsData} />}
       </Card>
     </div>
   );

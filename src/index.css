@@ -32,7 +32,13 @@
 body {
   background-color: var(--bg);
   color: var(--text-primary);
-  font-family: system-ui, sans-serif;
+  font-family: "Inter", sans-serif;
+}
+
+h1,
+h2,
+h3 {
+  font-family: "Poppins", sans-serif;
 }
 
 .input {
@@ -82,4 +88,27 @@ body {
 /* Hover effect */
 .slider::-webkit-slider-thumb:hover {
   transform: scale(1.2);
+}
+
+button {
+  cursor: pointer;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -400px 0;
+  }
+  100% {
+    background-position: 400px 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--border) 25%, rgba(255, 255, 255, 0.1) 50%, var(--border) 75%);
+  background-size: 400px 100%;
+  animation: shimmer 1.2s infinite;
 }

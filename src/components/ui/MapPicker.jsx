@@ -11,7 +11,7 @@ L.Icon.Default.mergeOptions({
 import { MapContainer, TileLayer, useMapEvents, Marker } from "react-leaflet";
 import { useState } from "react";
 import { reverseGeocode } from "../../utils/geoCode";
-function LocationMarker({ setLat, setLocation }) {
+function LocationMarker({ setLat, setLon, setLocation, onSelect }) {
   const [position, setPosition] = useState(null);
 
   useMapEvents({
@@ -20,23 +20,25 @@ function LocationMarker({ setLat, setLocation }) {
 
       setPosition(e.latlng);
       setLat(lat);
-
-      // async inside
+      setLon(lng); // ✅ FIX: add longitude
+      setLocation(`${lat.toFixed(2)}, ${lng.toFixed(2)}`); // instant feedback
       reverseGeocode(lat, lng).then((name) => {
         if (name) {
           setLocation(name);
         }
       });
+
+      if (onSelect) onSelect(); // ✅ CLOSE MAP
     },
   });
   return position === null ? null : <Marker position={position} />;
 }
 
-export default function MapPicker({ setLat, setLocation }) {
+export default function MapPicker({ setLat, setLon, setLocation, onSelect }) {
   return (
     <MapContainer center={[28.6, 77.2]} zoom={5} style={{ height: "300px", width: "100%", borderRadius: "12px" }}>
       <TileLayer attribution="&copy; OpenStreetMap contributors" url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-      <LocationMarker setLat={setLat} setLocation={setLocation} />
+      <LocationMarker setLat={setLat} setLon={setLon} setLocation={setLocation} onSelect={onSelect} />
     </MapContainer>
   );
 }
