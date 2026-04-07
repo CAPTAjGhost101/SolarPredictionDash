@@ -80,7 +80,7 @@ This project is a **solar energy monitoring dashboard** designed to simulate a r
 ## 📸 Preview
 
 <p align="center">
-  <img src="./preview.png" alt="Solar Dashboard Preview" width="90%" />
+  <img src="./public/preview.PNG" alt="Solar Dashboard Preview" width="90%" />
 </p>
 
 ---
@@ -102,7 +102,7 @@ src/
 ## ⚙️ Installation
 
 ```bash
-git clone https://github.com/yourusername/project-name.git
+git clone https://github.com/yourusername/project-SolarPredictionDash.git
 cd project-name
 npm install
 npm run dev
@@ -112,7 +112,7 @@ npm run dev
 
 ## 🌐 Deployment
 
-Deployed using **Vercel** with GitHub integration for continuous deployment.
+Deployed using **netlify** with GitHub integration for continuous deployment.
 
 ```bash
 npm run build
