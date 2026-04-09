@@ -1060,6 +1060,10 @@ export default function Dashboard() {
           {toast.message}
         </div>
       )}
+      <div className="flex justify-center items-center text-xs text-gray-400 mt-6">
+        <span className="mr-1">Made by</span>
+        <span className="font-medium text-gray-600 tracking-wide">Ajay Danu</span>
+      </div>
     </div>
   );
 }

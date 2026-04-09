@@ -1,7 +1,7 @@
-# ⚡ Solar Energy Dashboard
+# ⚡ SolarPlanner v2.0 – Energy Prediction SaaS Platform
 
 <p align="center">
-  A modern, interactive React dashboard to visualize and compare solar energy production with real-time insights and a premium UI.
+  A modern SaaS platform to plan and predict solar energy production, helping users evaluate solar plant feasibility with real-time insights, interactive visualizations, and cloud-based data storage.
 </p>
 
 ---
@@ -18,7 +18,8 @@
 
 ## ✨ Overview
 
-This project is a **solar energy monitoring dashboard** designed to simulate a real-world renewable energy system. It enables users to analyze **energy production, compare locations, and visualize data interactively** through a modern and responsive interface.
+**SolarPlanner v2.0** is a **SaaS-based solar planning and prediction platform** designed to help users make informed decisions before installing a solar plant.
+It provides **energy insights, location-based comparison, and interactive data visualization**, combined with **secure authentication and cloud data persistence**.
 
 ---
 
@@ -26,11 +27,13 @@ This project is a **solar energy monitoring dashboard** designed to simulate a r
 
 ### 🚀 v2.0 (Latest)
 
-- 🗺️ Introduced **map-based layout** for better visualization
-- 📍 Enhanced **location comparison functionality**
-- 🎛️ Added **interactive buttons and controls**
-- ✨ Improved **animations and transitions**
-- 🔤 Refined **typography and overall UI polish**
+- 🗺️ Map-based layout for location-driven analysis
+- 🔐 Google Authentication for secure user access
+- ☁️ Firestore integration for persistent cloud storage
+- 📍 Enhanced location comparison system
+- 🎛️ Interactive UI controls and improved usability
+- ✨ Smooth animations and refined UI/UX
+- 💳 Help desk & support workflows using Notion + Stripe
 
 ### v1.0
 
@@ -41,46 +44,53 @@ This project is a **solar energy monitoring dashboard** designed to simulate a r
 
 ## 🚀 Features
 
-### 📊 Data Visualization
+### 📊 Data & Prediction
 
 - Interactive charts using Recharts
 - Actual vs Estimated energy comparison
-- Tooltip-based data insights
+- Location-based solar analysis and insights
+
+### 🔐 Authentication & Cloud
+
+- Google Authentication integration
+- Cloud-based storage using Firebase Firestore
+- Persistent user data across sessions
 
 ### 🎨 UI / UX
 
-- Clean, minimal, modern interface
+- Clean, modern, and minimal interface
 - Light & Dark mode support
 - Fully responsive (mobile + desktop)
-- Smooth animations and transitions
+- Skeleton loading, smooth animations, and refined typography
 
-### ⚙️ Functionality
+### ⚙️ Architecture & Functionality
 
-- Dynamic data rendering
 - Component-based architecture
-- Optimized chart performance
-- Conditional rendering (loading states)
-- Map-based UI interaction (v2.0)
+- Built with React Hooks (useState, useEffect)
+- Dynamic rendering and optimized state management
+- Map-integrated UI for better visualization
 
 ---
 
 ## 🛠 Tech Stack
 
-| Category        | Technology   |
-| --------------- | ------------ |
-| Frontend        | React.js     |
-| Styling         | Tailwind CSS |
-| Charts          | Recharts     |
-| Build Tool      | Vite         |
-| Deployment      | Vercel       |
-| Version Control | Git & GitHub |
+| Category        | Technology                 |
+| --------------- | -------------------------- |
+| Frontend        | React.js                   |
+| Styling         | Tailwind CSS               |
+| Charts          | Recharts                   |
+| State Logic     | React Hooks                |
+| Backend/Cloud   | Firebase (Auth, Firestore) |
+| Build Tool      | Vite                       |
+| Deployment      | Netlify                    |
+| Version Control | Git & GitHub               |
 
 ---
 
 ## 📸 Preview
 
 <p align="center">
-  <img src="./public/preview.PNG" alt="Solar Dashboard Preview" width="90%" />
+  <img src="./public/preview.PNG" alt="SolarPlanner Preview" width="90%" />
 </p>
 
 ---
@@ -102,8 +112,8 @@ src/
 ## ⚙️ Installation
 
 ```bash
-git clone https://github.com/yourusername/project-SolarPredictionDash.git
-cd project-name
+git clone https://github.com/CAPTAjGhost101/SolarPredictionDash.git
+cd SolarPredictionDash
 npm install
 npm run dev
 ```
@@ -112,7 +122,7 @@ npm run dev
 
 ## 🌐 Deployment
 
-Deployed using **netlify** with GitHub integration for continuous deployment.
+Deployed using **Netlify** with GitHub integration for CI/CD.
 
 ```bash
 npm run build
@@ -122,26 +132,27 @@ npm run build
 
 ## 💡 Key Highlights
 
-- Built a **production-ready dashboard with modern UI**
-- Implemented **interactive data visualization and comparison logic**
-- Designed a **map-integrated interface for better user experience**
-- Focused on **scalable architecture and clean code practices**
+- Built a **real-world SaaS platform for solar planning and prediction**
+- Implemented **authentication + cloud data storage using Firebase**
+- Designed a **map-integrated UI for enhanced decision-making**
+- Focused on **scalable architecture, UX, and performance optimization**
 
 ---
 
 ## 📚 Key Learnings
 
-- Building scalable React applications
-- Implementing real-world data visualization
-- Enhancing UI/UX using Tailwind CSS
-- Managing project structure and performance
-- Deploying applications using modern workflows
+- Building scalable React SaaS applications
+- Integrating authentication and cloud databases
+- Designing data-driven dashboards and prediction systems
+- Enhancing UI/UX with modern frontend practices
+- Deploying and managing production-ready applications
 
 ---
 
 ## 🔮 Future Improvements
 
-- 🔌 Real-time API integration
+- 🌍 Real-time solar & weather API integration
+- 🗺️ 3D map shading for terrain-based prediction
 - 📊 Advanced analytics & insights
 - 🔔 Smart alert system
 - 📅 Historical data tracking
@@ -161,5 +172,5 @@ MIT License © 2026
 ---
 
 <p align="center">
-  Made with ⚡ using React, Tailwind & modern web practices
+  Built as a real-world SaaS product using React, Firebase & modern web technologies ⚡
 </p>
