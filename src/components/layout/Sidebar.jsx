@@ -14,7 +14,9 @@ export default function Sidebar() {
     >
       {/* Logo */}
       <div>
-        <h1 className="text-xl font-semibold mb-8 tracking-tight">⚡ SolarPlanner</h1>
+        <h1 className="text-xl font-semibold mb-8 tracking-tight">
+          SolarPlanner <span className="text-xs text-gray-500">v2.1</span>
+        </h1>
 
         {/* Menu */}
         <nav className="space-y-1">

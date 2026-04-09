@@ -14,6 +14,9 @@ import jsPDF from "jspdf";
 import { getSolarData } from "../utils/solarWeather";
 import { Save, Download, Zap, IndianRupee, Trash2, GitCompare, MapPin, Search, Sun, BarChart3, Clock, TrendingUp, AlertTriangle, Compass } from "lucide-react";
 import Skeleton from "../components/ui/Skeleton";
+import { db, auth } from "../firebase";
+import { collection, addDoc, getDocs, query, where, deleteDoc, doc, updateDoc } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
 
 export default function Dashboard() {
   // STATES
@@ -50,6 +53,45 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const metricsRef = useRef(null);
   const [highlightMetrics, setHighlightMetrics] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
+  const [editingLoadingId, setEditingLoadingId] = useState(null);
+  const [toast, setToast] = useState(null);
+
+  // Edit Data in Firebase
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (!user) return;
+
+      try {
+        const q = query(collection(db, "locations"), where("userId", "==", user.uid));
+
+        const querySnapshot = await getDocs(q);
+
+        const data = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        setSavedLocations(data);
+
+        console.log("Fetched from Firebase ✅", data);
+      } catch (err) {
+        console.error("Fetch error:", err);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // Toast System
+  const showToast = (message, type = "success") => {
+    setToast({ message, type });
+
+    setTimeout(() => {
+      setToast(null);
+    }, 2500);
+  };
 
   //SEARCH
   const handleSearch = (value) => {
@@ -124,17 +166,17 @@ export default function Dashboard() {
     return `linear-gradient(to right, hsl(${hue}, 80%, 50%), hsl(${hue}, 80%, 60%))`;
   }
 
-  // LOCAL STORAGE FUNCTION
-  useEffect(() => {
-    const stored = localStorage.getItem("solar_locations");
-    if (stored) {
-      setSavedLocations(JSON.parse(stored));
-    }
-  }, []);
+  // FIREBASE CLOUD (OLDER - LOCAL STORAGE FUNCTION)
 
-  const handleSaveLocation = () => {
+  const handleSaveLocation = async () => {
+    if (!auth.currentUser) {
+      showToast("Please login first", "error");
+      return;
+    }
+
+    setSaving(true);
+
     const newLocation = {
-      id: Date.now(),
       name: customName || location || "Unnamed Setup",
       lat,
       lon,
@@ -144,14 +186,24 @@ export default function Dashboard() {
       azimuth,
       tiltAngle,
       isOnGrid,
+      userId: auth.currentUser.uid,
+      createdAt: new Date(),
     };
 
-    const updated = [...savedLocations, newLocation];
+    try {
+      const docRef = await addDoc(collection(db, "locations"), newLocation);
 
-    setSavedLocations(updated);
-    localStorage.setItem("solar_locations", JSON.stringify(updated));
+      setSavedLocations((prev) => [...prev, { ...newLocation, id: docRef.id }]);
 
-    setCustomName(""); // reset after save
+      setCustomName("");
+
+      showToast("Saved successfully ☁️");
+    } catch (err) {
+      console.error(err);
+      showToast("Save failed ❌", "error");
+    }
+
+    setSaving(false);
   };
 
   // LOAD FUNCTIONS
@@ -169,11 +221,22 @@ export default function Dashboard() {
   };
 
   //DELETE FUNCTION
-  const handleDeleteLocation = (id) => {
-    const updated = savedLocations.filter((item) => item.id !== id);
 
-    setSavedLocations(updated);
-    localStorage.setItem("solar_locations", JSON.stringify(updated));
+  const handleDeleteLocation = async (id) => {
+    setDeletingId(id);
+
+    try {
+      await deleteDoc(doc(db, "locations", id));
+
+      setSavedLocations((prev) => prev.filter((item) => item.id !== id));
+
+      showToast("Deleted successfully 🗑️");
+    } catch (err) {
+      console.error(err);
+      showToast("Delete failed ❌", "error");
+    }
+
+    setDeletingId(null);
   };
 
   const getScore = (item) => {
@@ -326,6 +389,28 @@ export default function Dashboard() {
       setHighlightMetrics(false);
     }, 1200);
   };
+
+  const handleEditSave = async (id) => {
+    setEditingLoadingId(id);
+
+    try {
+      await updateDoc(doc(db, "locations", id), {
+        name: editValue,
+      });
+
+      setSavedLocations((prev) => prev.map((loc) => (loc.id === id ? { ...loc, name: editValue } : loc)));
+
+      setEditingId(null);
+
+      showToast("Updated successfully ✏️");
+    } catch (err) {
+      console.error(err);
+      showToast("Update failed ❌", "error");
+    }
+
+    setEditingLoadingId(null);
+  };
+
   return (
     <div className="p-8 space-y-10 max-w-7xl mx-auto">
       <div className="grid grid-cols-2 gap-6">
@@ -338,9 +423,23 @@ export default function Dashboard() {
             </h2>
 
             <div className="flex gap-2">
-              <button onClick={handleSaveLocation} className="px-3 py-2 rounded-lg bg-[var(--primary)] text-white flex items-center gap-2 hover:opacity-90 active:scale-[0.97] active:shadow-inner transition-all">
-                <Save size={16} />
-                Save
+              <button
+                onClick={handleSaveLocation}
+                disabled={saving}
+                className={`
+    px-3 py-2 rounded-lg text-white flex items-center gap-2
+    transition-all
+    ${saving ? "bg-gray-400 cursor-not-allowed" : "bg-[var(--primary)] hover:opacity-90 active:scale-[0.97]"}
+  `}
+              >
+                {saving ? (
+                  "Saving..."
+                ) : (
+                  <>
+                    {" "}
+                    <Save size={16} /> Save{" "}
+                  </>
+                )}
               </button>
 
               <button onClick={handleExport} className="px-3 py-2 rounded-lg bg-green-600 text-white flex items-center gap-2 hover:opacity-90 active:scale-[0.97] active:shadow-inner transition-all">
@@ -606,24 +705,14 @@ export default function Dashboard() {
                             onChange={(e) => setEditValue(e.target.value)}
                             onKeyDown={(e) => {
                               if (e.key === "Enter") {
-                                const updated = savedLocations.map((loc) => (loc.id === item.id ? { ...loc, name: editValue } : loc));
-
-                                setSavedLocations(updated);
-                                localStorage.setItem("solar_locations", JSON.stringify(updated));
-                                setEditingId(null);
+                                handleEditSave(item.id);
                               }
 
                               if (e.key === "Escape") {
                                 setEditingId(null);
                               }
                             }}
-                            onBlur={() => {
-                              const updated = savedLocations.map((loc) => (loc.id === item.id ? { ...loc, name: editValue } : loc));
-
-                              setSavedLocations(updated);
-                              localStorage.setItem("solar_locations", JSON.stringify(updated));
-                              setEditingId(null);
-                            }}
+                            onBlur={() => handleEditSave(item.id)}
                             className="input text-sm"
                             autoFocus
                           />
@@ -638,6 +727,9 @@ export default function Dashboard() {
                             {item.name}
                           </p>
                         )}
+
+                        {editingLoadingId === item.id && <p className="text-xs text-[var(--text-muted)]">Saving...</p>}
+
                         <p className="text-xs text-[var(--text-muted)]">
                           {item.systemSize} kW • {item.usage} kWh • ₹{item.rate}
                         </p>
@@ -650,10 +742,10 @@ export default function Dashboard() {
                             e.stopPropagation();
                             handleDeleteLocation(item.id);
                           }}
-                          className="text-xs text-red-500 hover:underline flex items-center gap-1 active:scale-[0.97] active:shadow-inner"
+                          className="text-xs text-red-500 hover:underline flex items-center gap-1"
                         >
                           <Trash2 size={14} />
-                          Delete
+                          {deletingId === item.id ? "Deleting..." : "Delete"}
                         </button>
 
                         <button
@@ -955,6 +1047,19 @@ export default function Dashboard() {
         </div>
         {loading ? <Skeleton className="skeleton w-full h-64" /> : <SavingsChart data={savingsData} />}
       </Card>
+
+      {/*Toast*/}
+      {toast && (
+        <div
+          className={`
+      fixed bottom-6 right-6 px-4 py-3 rounded-xl shadow-lg text-white
+      ${toast.type === "error" ? "bg-red-500" : "bg-green-500"}
+      animate-fade-in
+    `}
+        >
+          {toast.message}
+        </div>
+      )}
     </div>
   );
 }
