@@ -1,6 +1,5 @@
 export async function searchLocations(query) {
-  const API_KEY = "3c62c2242262486b9b645b5be33f5ec6";
-
+  const API_KEY = import.meta.env.VITE_OPENCAGE_API_KEY;
   const res = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${query}&key=${API_KEY}&limit=5`);
 
   const data = await res.json();
@@ -13,8 +12,7 @@ export async function searchLocations(query) {
 }
 
 export async function reverseGeocode(lat, lng) {
-  const API_KEY = "3c62c2242262486b9b645b5be33f5ec6";
-
+  const API_KEY = import.meta.env.VITE_OPENCAGE_API_KEY;
   const res = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=${API_KEY}`);
 
   const data = await res.json();
