@@ -25,34 +25,34 @@ export function getSunHoursFromLatitude(lat) {
 }
 
 // The below code performs the ROI funtion
-export function calculateAdvancedROI({ systemSize, rate, monthlyEnergy, usage, isOnGrid }) {
-  const costPerKW = 50000;
-
-  const totalCost = systemSize * costPerKW;
-
+export function calculateAdvancedROI({
+  systemSize,
+  rate,
+  monthlyEnergy,
+  usage,
+  isOnGrid,
+  totalCost, // ✅ NEW
+}) {
   const usedEnergy = Math.min(monthlyEnergy, usage);
   const surplusEnergy = Math.max(0, monthlyEnergy - usage);
 
-  let effectiveEnergy;
+  const monthlySavings = usedEnergy * rate;
 
-  if (isOnGrid) {
-    effectiveEnergy = monthlyEnergy; // full benefit
-  } else {
-    effectiveEnergy = usedEnergy; // surplus wasted
-  }
+  const yearlySavings = monthlySavings * 12;
 
-  const monthlySavings = Math.round(effectiveEnergy * rate);
+  // ✅ PAYBACK FIX
+  const paybackYears = yearlySavings > 0 ? (totalCost / yearlySavings).toFixed(1) : 0;
 
-  const paybackMonths = Math.ceil(totalCost / monthlySavings);
-  const paybackYears = (paybackMonths / 12).toFixed(1);
+  const paybackMonths = Math.round(paybackYears * 12);
 
   return {
-    totalCost,
     usedEnergy,
     surplusEnergy,
-    monthlySavings,
-    paybackMonths,
+    monthlySavings: Math.round(monthlySavings),
+    yearlySavings: Math.round(yearlySavings),
     paybackYears,
+    paybackMonths,
+    totalCost,
   };
 }
 

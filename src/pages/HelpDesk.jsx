@@ -16,23 +16,23 @@ export default function HelpDesk() {
 
   const faqs = [
     {
-      q: "⚡ What is kWh?",
+      q: "What is kWh?",
       a: "kWh (kilowatt-hour) is the unit of electricity. It represents how much energy you use or generate.",
     },
     {
-      q: "💰 How are savings calculated?",
+      q: "How are savings calculated?",
       a: "Savings = Energy generated × electricity rate (₹/kWh).",
     },
     {
-      q: "📐 What is tilt angle?",
+      q: "What is tilt angle?",
       a: "Tilt is the angle of your solar panel. Optimal tilt improves sunlight capture and efficiency.",
     },
     {
-      q: "🧭 What is panel direction (azimuth)?",
+      q: "What is panel direction (azimuth)?",
       a: "It is the direction your panel faces. In India, south-facing panels give the best performance.",
     },
     {
-      q: "🔌 On-grid vs Off-grid",
+      q: "On-grid vs Off-grid",
       a: "On-grid systems send excess electricity to the grid. Off-grid systems store energy in batteries.",
     },
   ];
@@ -108,7 +108,7 @@ export default function HelpDesk() {
 
         {/* HOW TO USE */}
         <div ref={usageRef} className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 space-y-4 shadow-sm">
-          <h2 className="text-lg font-semibold">🚀 How to use</h2>
+          <h2 className="text-lg font-semibold">How to use</h2>
 
           <ol className="text-sm text-[var(--text-muted)] space-y-2 list-decimal list-inside">
             <li>Enter location or select from map</li>
@@ -120,7 +120,7 @@ export default function HelpDesk() {
 
         {/* FAQ */}
         <div ref={faqRef} className="space-y-4">
-          <h2 className="text-lg font-semibold">❓ FAQ</h2>
+          <h2 className="text-lg font-semibold">FAQ</h2>
 
           {filteredFaqs.length === 0 && <p className="text-sm text-[var(--text-muted)]">No results found.</p>}
 

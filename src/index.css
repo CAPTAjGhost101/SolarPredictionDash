@@ -1,37 +1,31 @@
 @import "tailwindcss";
 @import "leaflet/dist/leaflet.css";
-/* Light Theme */
+
+/* LIGHT THEME */
 :root {
-  --bg: #f8fafc;
-  --card: #ffffff;
+  --bg: #ffffff;
+  --card: #f9fafb;
+  --text: #111827;
+  --text-muted: #6b7280;
   --border: #e5e7eb;
-
-  --primary: #f59e0b;
-  --primary-hover: #d97706;
-
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #94a3b8;
+  --primary: #f97316;
 }
 
-/* Dark Theme */
-.dark {
-  --bg: #020617;
-  --card: #0f172a;
-  --border: #1e293b;
-
-  --primary: #fbbf24;
-  --primary-hover: #f59e0b;
-
-  --text-primary: #f8fafc;
-  --text-secondary: #cbd5f5;
-  --text-muted: #64748b;
+/* DARK THEME */
+[data-theme="dark"] {
+  --bg: #0f172a;
+  --card: #1e293b;
+  --text: #f1f5f9;
+  --text-muted: #94a3b8;
+  --border: #334155;
+  --primary: #f97316;
 }
 
 /* Apply globally */
 body {
-  background-color: var(--bg);
-  color: var(--text-primary);
+  background: var(--bg);
+  color: var(--text);
+
   font-family: "Inter", sans-serif;
 }
 
@@ -126,4 +120,11 @@ html {
 
 .animate-fade-in {
   animation: fade-in 0.3s ease;
+}
+
+* {
+  transition:
+    background 0.3s ease,
+    color 0.3s ease,
+    border 0.3s ease;
 }

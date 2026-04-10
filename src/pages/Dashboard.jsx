@@ -17,6 +17,8 @@ import Skeleton from "../components/ui/Skeleton";
 import { db, auth } from "../firebase";
 import { collection, addDoc, getDocs, query, where, deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
+import { useSettings } from "../context/SettingsContext";
+import { useTranslate } from "../utils/useTranslate";
 
 export default function Dashboard() {
   // STATES
@@ -24,6 +26,7 @@ export default function Dashboard() {
   const [rate, setRate] = useState(8);
   const [usage, setUsage] = useState(300);
   const [systemSize, setSystemSize] = useState(1);
+  const [systemCost, setSystemCost] = useState(60000);
   const [isOnGrid, setIsOnGrid] = useState(true);
   const [lat, setLat] = useState(28.6);
   const [lon, setLon] = useState(77.2);
@@ -40,6 +43,12 @@ export default function Dashboard() {
     setTiltAngle(optimalTilt);
     setAzimuth(optimalAzimuth);
   }, [lat, lon]);
+
+  useEffect(() => {
+    const estimatedCost = systemSize * settings.defaultCost; // ₹60k per kW
+    setSystemCost(estimatedCost);
+  }, [systemSize]);
+
   const [savedLocations, setSavedLocations] = useState([]);
   const [activeId, setActiveId] = useState(null);
   const [customName, setCustomName] = useState("");
@@ -57,6 +66,11 @@ export default function Dashboard() {
   const [deletingId, setDeletingId] = useState(null);
   const [editingLoadingId, setEditingLoadingId] = useState(null);
   const [toast, setToast] = useState(null);
+  const { settings } = useSettings();
+
+  //helper for Settings
+  const currencySymbol = settings.currency === "INR" ? "₹" : "$";
+  const unitLabel = settings.unit === "kwh" ? "kwh" : "Units";
 
   // Edit Data in Firebase
   useEffect(() => {
@@ -131,6 +145,7 @@ export default function Dashboard() {
     monthlyEnergy: monthlyAvg,
     usage,
     isOnGrid,
+    totalCost: systemCost,
   });
 
   useEffect(() => {
@@ -303,8 +318,8 @@ export default function Dashboard() {
     doc.setFontSize(12);
     doc.text(`Location: ${location}`, 10, 55);
     doc.text(`System Size: ${systemSize} kW`, 10, 65);
-    doc.text(`Electricity Rate: ₹${rate}/kWh`, 10, 75);
-    doc.text(`Monthly Usage: ${usage} kWh`, 10, 85);
+    doc.text(`Electricity Rate: { currencySymbol }${rate}/{unitLabel}`, 10, 75);
+    doc.text(`Monthly Usage: ${usage} {unitLabel}`, 10, 85);
     doc.text(`System Type: ${isOnGrid ? "On-Grid" : "Off-Grid"}`, 10, 95);
 
     // Section: Performance
@@ -312,8 +327,8 @@ export default function Dashboard() {
     doc.text("Performance", 10, 115);
 
     doc.setFontSize(12);
-    doc.text(`Monthly Output: ${monthlyAvg} kWh`, 10, 125);
-    doc.text(`Yearly Output: ${yearlyTotal} kWh`, 10, 135);
+    doc.text(`Monthly Output: ${monthlyAvg} {unitLabel}`, 10, 125);
+    doc.text(`Yearly Output: ${yearlyTotal} {unitLabel}`, 10, 135);
     doc.text(`Coverage: ${coverage}%`, 10, 145);
 
     // Section: Financials
@@ -321,8 +336,8 @@ export default function Dashboard() {
     doc.text("Financial Analysis", 10, 165);
 
     doc.setFontSize(12);
-    doc.text(`Monthly Savings: ₹${roi.monthlySavings}`, 10, 175);
-    doc.text(`Yearly Savings: ₹${roi.yearlySavings}`, 10, 185);
+    doc.text(`Monthly Savings: { currencySymbol }${roi.monthlySavings}`, 10, 175);
+    doc.text(`Yearly Savings: { currencySymbol }${roi.yearlySavings}`, 10, 185);
     doc.text(`Payback Period: ${roi.paybackYears} years`, 10, 195);
 
     // Save
@@ -411,6 +426,8 @@ export default function Dashboard() {
     setEditingLoadingId(null);
   };
 
+  const { t } = useTranslate();
+
   return (
     <div className="p-8 space-y-10 max-w-7xl mx-auto">
       <div className="grid grid-cols-2 gap-6">
@@ -419,7 +436,7 @@ export default function Dashboard() {
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-semibold tracking-tight flex items-center gap-2">
               <Sun size={18} />
-              Solar Setup
+              {t("solarSetup")}
             </h2>
 
             <div className="flex gap-2">
@@ -433,38 +450,38 @@ export default function Dashboard() {
   `}
               >
                 {saving ? (
-                  "Saving..."
+                  t("saving")
                 ) : (
                   <>
                     {" "}
-                    <Save size={16} /> Save{" "}
+                    <Save size={16} /> {t("save")}{" "}
                   </>
                 )}
               </button>
 
               <button onClick={handleExport} className="px-3 py-2 rounded-lg bg-green-600 text-white flex items-center gap-2 hover:opacity-90 active:scale-[0.97] active:shadow-inner transition-all">
                 <Download size={16} />
-                Export
+                {t("export")}
               </button>
             </div>
           </div>
 
           {/* System Type */}
           <div className="flex items-center gap-3 mb-6">
-            <label className="text-sm text-[var(--text-muted)]">System Type:</label>
+            <label className="text-sm text-[var(--text-muted)]">{t("systemType")}</label>
 
             <button onClick={() => setIsOnGrid(true)} className={`px-3 py-1 rounded-lg ${isOnGrid ? "bg-[var(--primary)] text-white" : "border border-[var(--border)]"} active:scale-[0.97] active:shadow-inner`}>
-              On-Grid
+              {t("onGrid")}
             </button>
 
             <button onClick={() => setIsOnGrid(false)} className={`px-3 py-1 rounded-lg ${!isOnGrid ? "bg-[var(--primary)] text-white" : "border border-[var(--border)]"} active:scale-[0.97] active:shadow-inner`}>
-              Off-Grid
+              {t("offGrid")}
             </button>
 
             {roi.surplusEnergy > 0 && !isOnGrid && (
               <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
                 <AlertTriangle size={14} />
-                {roi.surplusEnergy} kWh wasted due to off-grid setup
+                {roi.surplusEnergy} {unitLabel} {t("offgridWaste")}
               </p>
             )}
           </div>
@@ -474,13 +491,13 @@ export default function Dashboard() {
             {/* LEFT SIDE (Inputs) */}
             <div className="space-y-4">
               <div>
-                <label className="text-sm text-[var(--text-muted)]">Setup Name</label>
+                <label className="text-sm text-[var(--text-muted)]">{t("setupName")}</label>
 
-                <input type="text" value={customName} onChange={(e) => setCustomName(e.target.value)} className="input mt-1" placeholder="e.g. Farm Land, Factory Roof" />
+                <input type="text" value={customName} onChange={(e) => setCustomName(e.target.value)} className="input mt-1" placeholder={t("setupPlaceholder")} />
               </div>
               {/* Location */}
               <div className="relative z-20">
-                <label className="text-sm text-[var(--text-muted)]">Enter your place:</label>
+                <label className="text-sm text-[var(--text-muted)]">{t("enterPlace")}:</label>
 
                 <div className="flex gap-2 relative">
                   {showMap && (
@@ -490,7 +507,7 @@ export default function Dashboard() {
                           <MapPicker setLat={setLat} setLon={setLon} setLocation={setLocation} onSelect={() => setShowMap(false)} />
                         </div>
 
-                        <div className="p-2 text-xs text-[var(--text-muted)] text-center">Click on map to select location</div>
+                        <div className="p-2 text-xs text-[var(--text-muted)] text-center">{t("mapHint")}</div>
                       </div>
                     </div>
                   )}
@@ -510,7 +527,7 @@ export default function Dashboard() {
                       }
                     }}
                     className="input mt-1 flex-1"
-                    placeholder="Search city"
+                    placeholder={t("searchcity")}
                   />
 
                   <button
@@ -556,20 +573,35 @@ export default function Dashboard() {
 
               {/* Rate */}
               <div>
-                <label className="text-sm text-[var(--text-muted)]">Electricity Rate (₹/kWh or Units)</label>
+                <label className="text-sm text-[var(--text-muted)]">
+                  {t("electricityRate")} ({currencySymbol}/{unitLabel})
+                </label>
                 <input type="number" value={rate} onChange={(e) => setRate(Number(e.target.value))} className="input mt-1" />
               </div>
 
               {/* Usage */}
               <div>
-                <label className="text-sm text-[var(--text-muted)]">Monthly Usage (kWh or Units)</label>
+                <label className="text-sm text-[var(--text-muted)]">
+                  {t("monthlyUsage")} ({unitLabel} or Units)
+                </label>
                 <input type="number" value={usage} onChange={(e) => setUsage(Number(e.target.value))} className="input mt-1" />
               </div>
 
               {/* System Size */}
               <div>
-                <label className="text-sm text-[var(--text-muted)]">System Size (kW)</label>
+                <label className="text-sm text-[var(--text-muted)]">{t("systemSize")} (kW)</label>
                 <input type="number" value={systemSize} onChange={(e) => setSystemSize(Number(e.target.value))} className="input mt-1" />
+              </div>
+
+              {/* System Cost */}
+              <div>
+                <label className="text-sm text-[var(--text-muted)]">
+                  {t("systemCost")} ({currencySymbol})
+                </label>
+
+                <input type="number" value={systemCost} onChange={(e) => setSystemCost(Number(e.target.value))} className="input mt-1" placeholder={t("costPlaceholder")} />
+
+                <p className="text-xs text-[var(--text-muted)] mt-1">{t("costHint")}</p>
               </div>
             </div>
 
@@ -577,7 +609,9 @@ export default function Dashboard() {
             <div className="space-y-6">
               {/* Azimuth */}
               <div>
-                <label className="text-sm text-[var(--text-muted)]">Panel Direction: {azimuth}°</label>
+                <label className="text-sm text-[var(--text-muted)]">
+                  {t("panelDirection")}: {azimuth}°
+                </label>
 
                 <input
                   type="range"
@@ -596,7 +630,9 @@ export default function Dashboard() {
 
               {/* Tilt */}
               <div>
-                <label className="text-sm text-[var(--text-muted)]">Tilt Angle: {tiltAngle}°</label>
+                <label className="text-sm text-[var(--text-muted)]">
+                  {t("panelTilt")}: {tiltAngle}°
+                </label>
 
                 <input
                   type="range"
@@ -621,7 +657,7 @@ export default function Dashboard() {
   "
               >
                 <TrendingUp size={16} />
-                Check Metrics
+                {t("checkMetrics")}
               </button>
             </div>
           </div>
@@ -629,7 +665,7 @@ export default function Dashboard() {
 
         {/* SAVED LOCATIONS */}
         <Card className="transition-all duration-300 hover:-translate-y-[2px] hover:shadow-lg">
-          <h2 className="text-lg font-semibold mb-4 tracking-tight">Saved Locations</h2>
+          <h2 className="text-lg font-semibold mb-4 tracking-tight">{t("savedLocations")}</h2>
           {/* FILTER PILLS */}
           <div className="flex gap-2 mb-3">
             <button
@@ -641,7 +677,7 @@ export default function Dashboard() {
             >
               <span className="flex items-center gap-1">
                 <IndianRupee size={14} />
-                Savings
+                {t("sortSavings")}
               </span>
             </button>
 
@@ -654,7 +690,7 @@ export default function Dashboard() {
             >
               <span className="flex items-center gap-1">
                 <Zap size={14} />
-                Output
+                {t("sortOutput")}
               </span>
             </button>
 
@@ -667,12 +703,12 @@ export default function Dashboard() {
             >
               <span className="flex items-center gap-1">
                 <Clock size={14} />
-                Payback
+                {t("sortPayback")}
               </span>
             </button>
           </div>
-          <p className="text-xs text-[var(--text-muted)] mb-3">Ranked by estimated annual savings (default)</p>
-          {savedLocations.length === 0 && <p className="text-sm text-[var(--text-muted)]">No saved locations yet</p>}
+          <p className="text-xs text-[var(--text-muted)] mb-3">{t("rankedBy")}</p>
+          {savedLocations.length === 0 && <p className="text-sm text-[var(--text-muted)]">{t("noSaved")}</p>}
           <motion.div layout className="space-y-3">
             <AnimatePresence>
               {sortedLocations.map((item, index) => {
@@ -728,10 +764,11 @@ export default function Dashboard() {
                           </p>
                         )}
 
-                        {editingLoadingId === item.id && <p className="text-xs text-[var(--text-muted)]">Saving...</p>}
+                        {editingLoadingId === item.id && <p className="text-xs text-[var(--text-muted)]">{t("savingEdit")}</p>}
 
                         <p className="text-xs text-[var(--text-muted)]">
-                          {item.systemSize} kW • {item.usage} kWh • ₹{item.rate}
+                          {item.systemSize} kW • {item.usage} {unitLabel} • {currencySymbol}
+                          {item.rate}
                         </p>
                       </div>
 
@@ -745,7 +782,7 @@ export default function Dashboard() {
                           className="text-xs text-red-500 hover:underline flex items-center gap-1"
                         >
                           <Trash2 size={14} />
-                          {deletingId === item.id ? "Deleting..." : "Delete"}
+                          {deletingId === item.id ? t("deleting") : t("delete")}
                         </button>
 
                         <button
@@ -756,7 +793,7 @@ export default function Dashboard() {
                           className="text-xs text-blue-500 hover:underline ml-2 flex items-center gap-1 active:scale-[0.97] active:shadow-inner"
                         >
                           <GitCompare size={14} />
-                          {compareList.find((i) => i.id === item.id) ? "Remove" : "Compare"}
+                          {compareList.find((i) => i.id === item.id) ? t("remove") : t("compare")}
                         </button>
                       </div>
                     </div>
@@ -770,8 +807,8 @@ export default function Dashboard() {
         {/* COMPARE LIST */}
         {compareList.length === 2 && (
           <Card>
-            <h2 className="text-lg font-semibold mb-4 tracking-tight">Compare Locations</h2>
-            <p className="text-xs text-[var(--text-muted)] mb-3">Based on estimated monthly savings</p>
+            <h2 className="text-lg font-semibold mb-4 tracking-tight">{t("compareLocations")}</h2>
+            <p className="text-xs text-[var(--text-muted)] mb-3">{t("basedOnSavings")}</p>
             {/* Find Best */}
             {(() => {
               const [a, b] = compareList;
@@ -785,7 +822,7 @@ export default function Dashboard() {
                 const roiData = calculateAdvancedROI({
                   systemSize: item.systemSize,
                   rate: item.rate,
-                  monthlyEnergy: monthlyAvg, // ✅ correct now
+                  monthlyEnergy: monthlyAvg,
                   usage: item.usage,
                   isOnGrid: item.isOnGrid,
                 });
@@ -832,7 +869,7 @@ export default function Dashboard() {
               }
 
               if (diffSavings > 0) {
-                reasons.push(`₹${diffSavings}/month more savings`);
+                reasons.push(`{ currencySymbol }${diffSavings}/month more savings`);
               }
 
               reason = reasons.join(" and ");
@@ -840,13 +877,16 @@ export default function Dashboard() {
               return (
                 <div className="grid grid-cols-2 gap-6">
                   <div className="mb-5 p-5 rounded-2xl bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 shadow-sm">
-                    <p className="font-semibold text-green-700 flex items-center gap-2">🏆 {better.name} is the better choice</p>
-
-                    <p className="text-sm mt-1 text-green-700">
-                      +₹{diffSavings}/month ({percentBetter}% higher savings)
+                    <p className="font-semibold text-green-700 flex items-center gap-2">
+                      🏆 {better.name} {t("bestChoice")}
                     </p>
 
-                    <p className="text-xs text-[var(--text-muted)] mt-2">{reason || "Better overall performance based on your setup"}</p>
+                    <p className="text-sm mt-1 text-green-700">
+                      +{currencySymbol}
+                      {t("monthlySavingsCompare").replace("{value}", diffSavings)} ({t("higherSavingsPercent").replace("{value}", percentBetter)})
+                    </p>
+
+                    <p className="text-xs text-[var(--text-muted)] mt-2">{reason || t("betterReason")}</p>
                   </div>
 
                   {compareList.map((item) => {
@@ -866,28 +906,33 @@ export default function Dashboard() {
                         <div className="flex justify-between items-center">
                           <p className="font-semibold">{item.name}</p>
 
-                          {isBest && <span className="text-xs bg-green-500 text-white px-2 py-1 rounded-full">Best</span>}
+                          {isBest && <span className="text-xs bg-green-500 text-white px-2 py-1 rounded-full">{t("best")}</span>}
                         </div>
 
-                        {/* METRICS */}
+                        {/*COMPARE METRICS */}
                         <div className="mt-4 space-y-3 text-sm">
                           <div className="flex justify-between">
-                            <span>⚡ Output</span>
-                            <span className={item.id === better.id ? "text-green-600 font-medium" : "text-red-500"}>{monthlyAvg} kWh</span>
+                            <span>⚡ {t("output")}</span>
+                            <span className={item.id === better.id ? "text-green-600 font-medium" : "text-red-500"}>
+                              {monthlyAvg} {unitLabel}
+                            </span>
                           </div>
 
                           <div className="flex justify-between">
-                            <span>💰 Savings</span>
-                            <span className={item.id === better.id ? "text-green-600 font-medium" : "text-red-500"}>₹{savings}</span>
+                            <span>💰 {t("savings")}</span>
+                            <span className={item.id === better.id ? "text-green-600 font-medium" : "text-red-500"}>
+                              {currencySymbol}
+                              {savings}
+                            </span>
                           </div>
 
                           <div className="flex justify-between">
-                            <span>📊 Coverage</span>
+                            <span>📊 {t("coverage")}</span>
                             <span>{coverage}%</span>
                           </div>
 
                           <div className="flex justify-between">
-                            <span>⏳ Payback</span>
+                            <span>⏳ {t("sortPayback")}</span>
                             <span>{payback} yrs</span>
                           </div>
                         </div>
@@ -911,47 +956,71 @@ export default function Dashboard() {
   `}
       >
         <Card className="transition-all duration-300  hover:-translate-y-[2px] hover:shadow-lg">
-          <p className="text-sm text-[var(--text-muted)] tracking-tight">Direction Efficiency</p>
+          <p className="text-sm text-[var(--text-muted)] tracking-tight">{t("directionEfficiency")}</p>
           {loading ? <Skeleton className="w-20 h-8" /> : <h2 className="text-3xl font-semibold">{Math.round(getDirectionEfficiency(azimuth) * 100)}%</h2>}
         </Card>
 
         <Card className="transition-all duration-300 hover:-translate-y-[2px] hover:shadow-lg">
-          <p className="text-sm text-[var(--text-muted)] tracking-tight">Monthly Output</p>
-          {loading ? <Skeleton className="w-20 h-8" /> : <h2 className="text-3xl font-semibold mt-1 tracking-tight">{monthlyAvg} kWh</h2>}
+          <p className="text-sm text-[var(--text-muted)] tracking-tight">{t("monthlyOutput")}</p>
+          {loading ? (
+            <Skeleton className="w-20 h-8" />
+          ) : (
+            <h2 className="text-3xl font-semibold mt-1 tracking-tight">
+              {monthlyAvg} {unitLabel}
+            </h2>
+          )}
         </Card>
 
         <Card className="transition-all duration-300 hover:-translate-y-[2px] hover:shadow-lg">
-          <p className="text-sm text-[var(--text-muted)] tracking-tight">Yearly Output</p>
-          {loading ? <Skeleton className="w-20 h-8" /> : <h2 className="text-3xl font-semibold mt-1 tracking-tight">{yearlyTotal} kWh</h2>}
+          <p className="text-sm text-[var(--text-muted)] tracking-tight">{t("yearlyOutput")}</p>
+          {loading ? (
+            <Skeleton className="w-20 h-8" />
+          ) : (
+            <h2 className="text-3xl font-semibold mt-1 tracking-tight">
+              {yearlyTotal} {unitLabel}
+            </h2>
+          )}
         </Card>
 
         <Card className="transition-all duration-300 hover:-translate-y-[2px] hover:shadow-lg">
-          <p className="text-xs uppercase tracking-wide text-[var(--text-muted)] tracking-tight">Optimal Tilt</p>
+          <p className="text-xs uppercase tracking-wide text-[var(--text-muted)] tracking-tight">{t("optimalTilt")}</p>
           {loading ? <Skeleton className="w-20 h-8" /> : <h2 className="text-3xl font-semibold mt-1 tracking-tight">{tilt}°</h2>}
         </Card>
 
         <Card className="transition-all duration-300 hover:-translate-y-[2px] hover:shadow-lg">
-          <p className="text-sm text-[var(--text-muted)] tracking-tight">Optimal Direction</p>
+          <p className="text-sm text-[var(--text-muted)] tracking-tight">{t("optimalDirection")}</p>
           {loading ? <Skeleton className="w-20 h-8" /> : <h2 className="text-3xl font-semibold mt-1 tracking-tight">{getDirectionLabel(180)} (180°)</h2>}
         </Card>
 
         <Card className="transition-all duration-300 hover:-translate-y-[2px] hover:shadow-lg">
-          <p className="text-sm text-[var(--text-muted)] tracking-tight">Usage Covered</p>
+          <p className="text-sm text-[var(--text-muted)] tracking-tight">{t("usageCovered")}</p>
           {loading ? <Skeleton className="w-20 h-8" /> : <h2 className="text-3xl font-semibold mt-1 tracking-tight">{coverage}%</h2>}
         </Card>
 
         <Card className="transition-all duration-300 hover:-translate-y-[2px] hover:shadow-lg">
-          <p className="text-sm text-[var(--text-muted)] tracking-tight">Used Energy</p>
-          {loading ? <Skeleton className="w-20 h-8" /> : <h2 className="text-3xl font-semibold mt-1 tracking-tight">{roi.usedEnergy} kWh</h2>}
+          <p className="text-sm text-[var(--text-muted)] tracking-tight">{t("usedEnergy")}</p>
+          {loading ? (
+            <Skeleton className="w-20 h-8" />
+          ) : (
+            <h2 className="text-3xl font-semibold mt-1 tracking-tight">
+              {roi.usedEnergy} {unitLabel}
+            </h2>
+          )}
         </Card>
 
         <Card className="transition-all duration-300 hover:-translate-y-[2px] hover:shadow-lg">
-          <p className="text-sm text-[var(--text-muted)] tracking-tight">Surplus Energy</p>
-          {loading ? <Skeleton className="w-20 h-8" /> : <h2 className="text-3xl font-semibold mt-1 tracking-tight">{roi.surplusEnergy} kWh</h2>}
+          <p className="text-sm text-[var(--text-muted)] tracking-tight">{t("surplusEnergy")}</p>
+          {loading ? (
+            <Skeleton className="w-20 h-8" />
+          ) : (
+            <h2 className="text-3xl font-semibold mt-1 tracking-tight">
+              {roi.surplusEnergy} {unitLabel}
+            </h2>
+          )}
         </Card>
 
         <Card>
-          <p className="text-xs uppercase tracking-wide text-[var(--text-muted)]">Monthly Savings</p>
+          <p className="text-xs uppercase tracking-wide text-[var(--text-muted)]">{t("monthlySavings")}</p>
 
           {loading ? (
             <div className="mt-2 space-y-2">
@@ -960,15 +1029,21 @@ export default function Dashboard() {
             </div>
           ) : (
             <>
-              <h2 className="text-3xl font-semibold mt-1 tracking-tight">₹{roi.monthlySavings}</h2>
+              <h2 className="text-3xl font-semibold mt-1 tracking-tight">
+                {currencySymbol}
+                {roi.monthlySavings}
+              </h2>
 
-              <p className="text-xs text-[var(--text-muted)] mt-1 text-green-500">₹{roi.monthlySavings * 12} yearly</p>
+              <p className="text-xs text-[var(--text-muted)] mt-1 text-green-500">
+                {currencySymbol}
+                {roi.monthlySavings * 12} {t("yearly")}
+              </p>
             </>
           )}
         </Card>
 
         <Card className="transition-all duration-300 hover:-translate-y-[2px] hover:shadow-lg">
-          <p className="text-sm text-[var(--text-muted)] tracking-tight">Payback Period</p>
+          <p className="text-sm text-[var(--text-muted)] tracking-tight">{t("payback")}</p>
 
           {loading ? (
             <div className="mt-2 space-y-2">
@@ -977,8 +1052,12 @@ export default function Dashboard() {
             </div>
           ) : (
             <>
-              <h2 className="text-3xl font-semibold mt-1 tracking-tight">{roi.paybackYears} yrs</h2>
-              <p className="text-xs text-[var(--text-muted)]">~{roi.paybackMonths} months</p>
+              <h2 className="text-3xl font-semibold mt-1 tracking-tight">
+                {roi.paybackYears} {t("years")}
+              </h2>
+              <p className="text-xs text-[var(--text-muted)]">
+                ~{roi.paybackMonths} {t("months")}
+              </p>
             </>
           )}
         </Card>
@@ -996,7 +1075,7 @@ export default function Dashboard() {
           >
             <span className="flex items-center gap-1">
               <Sun size={14} />
-              Real Data
+              {t("realData")}
             </span>
           </button>
 
@@ -1009,17 +1088,21 @@ export default function Dashboard() {
           >
             <span className="flex items-center gap-1">
               <BarChart3 size={14} />
-              Estimated
+              {t("estimated")}
             </span>
           </button>
         </div>
-        <p className="text-xs text-[var(--text-muted)] mb-2">{dataMode === "real" ? "Based on last year's actual sunlight data" : "Based on calculated solar model"}</p>
-        <h2 className="text-lg font-semibold mb-4 tracking-tight">Solar Production</h2>
+        <p className="text-xs text-[var(--text-muted)] mb-2">{dataMode === "real" ? t("realHint") : t("estimatedHint")}</p>
+        <h2 className="text-lg font-semibold mb-4 tracking-tight">{t("solarProduction")}</h2>
 
         <div className="flex justify-between items-center mb-3">
-          <p className="text-sm text-[var(--text-muted)]">Monthly generation (kWh)</p>
+          <p className="text-sm text-[var(--text-muted)]">
+            {t("monthlyGeneration")} ({unitLabel})
+          </p>
 
-          <p className="text-sm font-medium">{yearlyTotal} kWh/year</p>
+          <p className="text-sm font-medium">
+            {yearlyTotal} {unitLabel}/year
+          </p>
         </div>
 
         {loading ? <Skeleton className="w-full h-64" /> : <EnergyChart data={finalChartData} />}
@@ -1042,7 +1125,7 @@ export default function Dashboard() {
 
       <Card className="transition-all duration-300  hover:-translate-y-[2px] hover:shadow-lg">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold tracking-tight">Savings Over Time</h2>
+          <h2 className="text-lg font-semibold tracking-tight">{t("savingsOverTime")}</h2>
           <span className="text-sm text-[var(--text-muted)]">10 Year Projection</span>
         </div>
         {loading ? <Skeleton className="skeleton w-full h-64" /> : <SavingsChart data={savingsData} />}

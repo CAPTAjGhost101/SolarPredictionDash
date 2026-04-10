@@ -1,4 +1,4 @@
-import { LayoutDashboard, Sun, Settings } from "lucide-react";
+import { LayoutDashboard, Sun, Settings, Home, HelpCircle } from "lucide-react";
 import { NavLink } from "react-router-dom";
 export default function Sidebar() {
   return (
@@ -20,14 +20,18 @@ export default function Sidebar() {
 
         {/* Menu */}
         <nav className="space-y-1">
-          <SidebarItem to="/" icon={<LayoutDashboard size={18} />} label="Dashboard" />
-          <SidebarItem to="/help" icon={<Sun size={18} />} label="Help Desk" />
+          <SidebarItem to="/" icon={<Home size={18} />} label="Home" />
+
+          <SidebarItem to="/dashboard" icon={<LayoutDashboard size={18} />} label="Dashboard" />
+
+          <SidebarItem to="/help" icon={<HelpCircle size={18} />} label="Help Desk" />
+
           <SidebarItem to="/settings" icon={<Settings size={18} />} label="Settings" />
         </nav>
       </div>
 
       {/* Bottom */}
-      <div className="text-xs text-[var(--text-muted)]">Solar Planner v1.0</div>
+      <div className="text-xs text-[var(--text-muted)]">Solar Planner v2.1</div>
     </div>
   );
 }
@@ -37,13 +41,28 @@ function SidebarItem({ icon, label, to }) {
     <NavLink
       to={to}
       className={({ isActive }) => `
-        flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer
-        transition-all duration-200
-        ${isActive ? "bg-[var(--primary)] text-white shadow-sm" : "text-[var(--text-secondary)] hover:bg-[var(--border)] hover:pl-4"}
+        group
+        relative flex items-center gap-3 px-3 py-2.5 rounded-xl
+        cursor-pointer overflow-hidden
+        transition-all duration-300
+
+        ${isActive ? "bg-[var(--primary)] text-white shadow-md" : "text-[var(--text-secondary)] hover:bg-[var(--border)]"}
       `}
     >
-      {icon}
-      <span className="text-sm">{label}</span>
+      {/* Glow Hover Effect */}
+      <div
+        className="
+        absolute inset-0 opacity-0 group-hover:opacity-100
+        bg-[var(--primary)]/10
+        blur-xl transition duration-300
+      "
+      />
+
+      {/* Icon */}
+      <span className="relative z-10 group-hover:scale-110 transition-transform">{icon}</span>
+
+      {/* Label */}
+      <span className="relative z-10 text-sm font-medium">{label}</span>
     </NavLink>
   );
 }

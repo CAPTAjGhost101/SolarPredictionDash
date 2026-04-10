@@ -46,14 +46,13 @@ export default function Topbar() {
           </button>
         ) : (
           <div className="flex items-center gap-3">
-            <img src={user.photoURL} className="w-8 h-8 rounded-full" />
+            <img src={user.photoURL} className="w-8 h-8 rounded-full border-amber-500 ring-2 ring-amber-500" />
             <p className="text-sm">{user.displayName}</p>
             <button onClick={handleLogout} className="text-xs text-red-500 hover:underline">
               Logout
             </button>
           </div>
         )}
-        <ThemeToggle />
       </div>
     </div>
   );

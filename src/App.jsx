@@ -2,6 +2,7 @@ import Sidebar from "./components/layout/Sidebar";
 import Topbar from "./components/layout/Topbar";
 import Dashboard from "./pages/Dashboard";
 import HelpDesk from "./pages/HelpDesk";
+import Home from "./pages/Home";
 import Settings from "./pages/Settings";
 
 import { Routes, Route } from "react-router-dom";
@@ -18,7 +19,8 @@ export default function App() {
 
         <div className="p-6">
           <Routes>
-            <Route path="/" element={<Dashboard />} />
+            <Route path="/" element={<Home />} />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/help" element={<HelpDesk />} />
             <Route path="/settings" element={<Settings />} />
           </Routes>
