@@ -56,7 +56,7 @@ export default function HelpDesk() {
   };
 
   return (
-    <div className="flex max-w-6xl mx-auto p-6 gap-8">
+    <div className="flex flex-col md:flex-row max-w-6xl mx-auto p-4 sm:p-6 gap-6 md:gap-8">
       {/* SIDEBAR */}
       <div className="w-56 hidden md:block">
         <div className="sticky top-20 space-y-2 text-sm">

@@ -1,10 +1,12 @@
 import { LayoutDashboard, Sun, Settings, Home, HelpCircle } from "lucide-react";
 import { NavLink } from "react-router-dom";
+import { useTranslate } from "../../utils/useTranslate";
 export default function Sidebar() {
+  const { t } = useTranslate();
   return (
     <div
       className="
-        w-64 h-screen
+        w-64 h-full md:h-screen
         bg-[var(--card)]
         border-r border-[var(--border)]
         p-4
@@ -20,13 +22,13 @@ export default function Sidebar() {
 
         {/* Menu */}
         <nav className="space-y-1">
-          <SidebarItem to="/" icon={<Home size={18} />} label="Home" />
+          <SidebarItem to="/" icon={<Home size={18} />} label={t("home")} />
 
-          <SidebarItem to="/dashboard" icon={<LayoutDashboard size={18} />} label="Dashboard" />
+          <SidebarItem to="/dashboard" icon={<LayoutDashboard size={18} />} label={t("dashboard")} />
 
-          <SidebarItem to="/help" icon={<HelpCircle size={18} />} label="Help Desk" />
+          <SidebarItem to="/help" icon={<HelpCircle size={18} />} label={t("help")} />
 
-          <SidebarItem to="/settings" icon={<Settings size={18} />} label="Settings" />
+          <SidebarItem to="/settings" icon={<Settings size={18} />} label={t("settings")} />
         </nav>
       </div>
 

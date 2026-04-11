@@ -8,7 +8,16 @@ export default function EnergyChart({ data }) {
         <LineChart data={data}>
           <XAxis dataKey="name" stroke="#94A3B8" />
           <YAxis stroke="#94A3B8" />
-          <Tooltip formatter={(value) => [`${value} kWh`, "Energy"]} labelFormatter={(label) => `Month: ${label}`} />
+          <Tooltip
+            contentStyle={{
+              backgroundColor: "var(--card)",
+              border: "1px solid var(--border)",
+              color: "var(--text)",
+              borderRadius: "10px",
+            }}
+            labelStyle={{ color: "var(--text)" }}
+            formatter={(value) => [`${value} kWh`, "Energy"]}
+          />
           <Line type="monotone" dataKey="energy" stroke="var(--primary)" strokeWidth={3} dot={false} />
         </LineChart>
       </ResponsiveContainer>

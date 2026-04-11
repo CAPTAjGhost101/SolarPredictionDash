@@ -10,6 +10,13 @@ export default function SavingsChart({ data }) {
         <LineChart data={data}>
           <XAxis dataKey="year" stroke="#94A3B8" />
           <Tooltip
+            contentStyle={{
+              backgroundColor: "var(--card)",
+              border: "1px solid var(--border)",
+              color: "var(--text)",
+              borderRadius: "10px",
+            }}
+            labelStyle={{ color: "var(--text)" }}
             formatter={(value, _name, props) => {
               if (props.payload.isBreakEven) {
                 return [`₹${value} 🎯 Break-even`, "Savings"];

@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Sun, TrendingUp, Zap, IndianRupee } from "lucide-react";
+import { Sun, TrendingUp, Zap, IndianRupee, Lightbulb } from "lucide-react";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -12,7 +12,7 @@ export default function Home() {
   ];
 
   return (
-    <div className="relative min-h-full px-6 py-16 flex flex-col items-center justify-center text-center">
+    <div className="relative min-h-full px-4 sm:px-6 py-12 sm:py-16 flex flex-col items-center justify-center text-center">
       {/* 🔥 BACKGROUND GRADIENT GLOW */}
       <div className="absolute inset-0 -z-10 flex justify-center items-center">
         <div className="w-[600px] h-[600px] bg-[var(--primary)] opacity-20 blur-[140px] rounded-full" />
@@ -24,8 +24,9 @@ export default function Home() {
       </motion.div>
 
       {/* TITLE */}
-      <motion.h1 initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="text-4xl md:text-6xl font-bold tracking-tight">
-        Plan Solar Smarter ⚡
+      <motion.h1 initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight flex items-center gap-2 sm:gap-3 flex-wrap">
+        <span>Plan Solar Smarter</span>
+        <Lightbulb className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" />
       </motion.h1>
 
       {/* SUBTITLE */}

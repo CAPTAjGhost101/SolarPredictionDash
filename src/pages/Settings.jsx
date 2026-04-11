@@ -1,7 +1,9 @@
 import { useEffect } from "react";
 import { useSettings } from "../context/SettingsContext";
 import { Palette, Bolt, NotebookPen } from "lucide-react";
+import { useTranslate } from "../utils/useTranslate";
 export default function Settings() {
+  const { t } = useTranslate();
   const { settings, setSettings } = useSettings();
 
   // SAVE to localStorage
@@ -19,16 +21,22 @@ export default function Settings() {
   }, []);
 
   return (
-    <div className="p-8 max-w-4xl mx-auto space-y-8">
-      <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
+    <div className="p-4 sm:p-8 max-w-4xl mx-auto space-y-8">
+      <h1 className="text-2xl font-semibold tracking-tight">{t("settings")}</h1>
 
       {/* APPEARANCE */}
       <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 space-y-4">
         <h2 className="text-lg font-semibold flex gap-2 items-center">
-          <Palette /> <div>Appearance</div>
+          <Palette /> <div>{t("appearance")}</div>
         </h2>
 
         <select
+          className="
+    mt-1 w-full px-3 py-2 rounded-lg
+    bg-[var(--card)] text-[var(--text)]
+    border border-[var(--border)]
+    focus:outline-none focus:ring-2 focus:ring-[var(--primary)]
+  "
           value={settings.theme}
           onChange={(e) =>
             setSettings((prev) => ({
@@ -37,7 +45,7 @@ export default function Settings() {
             }))
           }
         >
-          <option value="system">System Default</option>
+          <option value="system">{t("systemDefault")}</option>
           <option value="light">Light</option>
           <option value="dark">Dark</option>
         </select>
@@ -46,13 +54,19 @@ export default function Settings() {
       {/* PREFERENCES */}
       <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 space-y-4">
         <h2 className="text-lg font-semibold flex gap-2 items-center">
-          <Bolt /> <div>Preferences</div>
+          <Bolt /> <div>{t("preferences")}</div>
         </h2>
 
         {/* Language */}
         <div>
-          <label className="text-sm text-[var(--text-muted)]">Language</label>
+          <label className="text-sm text-[var(--text-muted)]">{t("language")}</label>
           <select
+            className="
+    mt-1 w-full px-3 py-2 rounded-lg
+    bg-[var(--card)] text-[var(--text)]
+    border border-[var(--border)]
+    focus:outline-none focus:ring-2 focus:ring-[var(--primary)]
+  "
             value={settings.language}
             onChange={(e) =>
               setSettings((prev) => ({
@@ -61,15 +75,21 @@ export default function Settings() {
               }))
             }
           >
-            <option value="en">English</option>
-            <option value="hi">Hindi</option>
+            <option value="en">{t("english")}</option>
+            <option value="hi">{t("hindi")}</option>
           </select>
         </div>
 
         {/* Unit */}
         <div>
-          <label className="text-sm text-[var(--text-muted)]">Energy Unit</label>
+          <label className="text-sm text-[var(--text-muted)]">{t("energyUnit")}</label>
           <select
+            className="
+    mt-1 w-full px-3 py-2 rounded-lg
+    bg-[var(--card)] text-[var(--text)]
+    border border-[var(--border)]
+    focus:outline-none focus:ring-2 focus:ring-[var(--primary)]
+  "
             value={settings.unit}
             onChange={(e) =>
               setSettings((prev) => ({
@@ -79,14 +99,20 @@ export default function Settings() {
             }
           >
             <option value="kwh">kWh</option>
-            <option value="units">Units</option>
+            <option value="units">{t("units")}</option>
           </select>
         </div>
 
         {/* Currency */}
         <div>
-          <label className="text-sm text-[var(--text-muted)]">Currency</label>
+          <label className="text-sm text-[var(--text-muted)]">{t("currency")}</label>
           <select
+            className="
+    mt-1 w-full px-3 py-2 rounded-lg
+    bg-[var(--card)] text-[var(--text)]
+    border border-[var(--border)]
+    focus:outline-none focus:ring-2 focus:ring-[var(--primary)]
+  "
             value={settings.currency}
             onChange={(e) =>
               setSettings((prev) => ({
@@ -104,11 +130,13 @@ export default function Settings() {
       {/* DEFAULTS */}
       <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 space-y-4">
         <h2 className="text-lg font-semibold flex gap-2 items-center">
-          <NotebookPen /> <div>Defaults</div>
+          <NotebookPen /> <div>{t("defRate")}</div>
         </h2>
 
         <div>
-          <label className="text-sm text-[var(--text-muted)]">Default Cost per kW ({settings.currency === "INR" ? "₹" : "$"})</label>
+          <label className="text-sm text-[var(--text-muted)]">
+            {t("defCost")}({settings.currency === "INR" ? "₹" : "$"})
+          </label>
 
           <input
             type="number"
@@ -122,13 +150,17 @@ export default function Settings() {
             className="input mt-1"
           />
 
-          <p className="text-xs text-[var(--text-muted)] mt-1">Used for auto-calculation in dashboard</p>
+          <p className="text-xs text-[var(--text-muted)] mt-1">{t("usedNote")}</p>
         </div>
       </div>
 
       {/* DANGER ZONE */}
-      <div className="bg-red-50 border border-red-200 rounded-2xl p-6 space-y-4">
-        <h2 className="text-lg font-semibold text-red-600">⚠️ Danger Zone</h2>
+      <div
+        className="bg-red-50 dark:bg-red-900/20
+  border border-red-200 dark:border-red-800
+  rounded-2xl p-6 space-y-4"
+      >
+        <h2 className="text-lg font-semibold text-red-600 dark:text-red-400">{t("danger")}</h2>
 
         <button
           onClick={() => {
@@ -145,7 +177,7 @@ export default function Settings() {
           }}
           className="px-4 py-2 bg-red-500 text-white rounded-lg hover:opacity-90 active:scale-[0.97] active:shadow-inner transition-all"
         >
-          Reset Settings
+          {t("resetSetting")}
         </button>
       </div>
     </div>
