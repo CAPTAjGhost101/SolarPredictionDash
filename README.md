@@ -6,7 +6,7 @@ A web-based SaaS application for planning and evaluating solar energy systems. I
 
 ## Live Demo
 
-https://effulgent-pegasus-18f686.netlify.app/
+[solarplannner-byajaydanu.netlify.app/](https://solarplannner-byajaydanu.netlify.app/)
 
 ## Repository
 
