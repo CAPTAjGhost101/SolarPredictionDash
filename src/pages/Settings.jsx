@@ -180,6 +180,10 @@ export default function Settings() {
           {t("resetSetting")}
         </button>
       </div>
+      <div className="flex justify-center items-center text-xs text-gray-600 mt-6">
+        <span className="mr-1 gradient-text">Made by</span>
+        <span className="font-medium text-gray-400 tracking-wide gradient-text">Ajay Danu</span>
+      </div>
     </div>
   );
 }

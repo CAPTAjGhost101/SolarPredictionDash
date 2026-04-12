@@ -34,7 +34,7 @@ export const translations = {
 
     // ---- SAVED LOCATIONS ----
     savedLocations: "Saved Locations",
-    noSaved: "No saved locations yet",
+    noSaved: "No saved locations yet.",
     delete: "Delete",
     deleting: "Deleting...",
     compare: "Compare",
@@ -113,7 +113,7 @@ export const translations = {
     useMyLocation: "Use My Location",
     pickFromMap: "Pick from Map",
     improveOutput: "Improve output by",
-    alreadyOptimized: "Your setup is already optimized ⚡",
+    alreadyOptimized: "Your setup is already optimized",
     or: "or", // NEW
     units: "Units",
     optimizeSetup: "Optimize My Setup",
@@ -173,7 +173,7 @@ export const translations = {
     mapHint: "लोकेशन चुनने के लिए मैप पर क्लिक करें",
 
     savedLocations: "सेव लोकेशन",
-    noSaved: "कोई सेव लोकेशन नहीं",
+    noSaved: "कोई सेव लोकेशन नहीं|",
     delete: "डिलीट",
     deleting: "डिलीट हो रहा है...",
     compare: "तुलना",
@@ -242,7 +242,7 @@ export const translations = {
     useMyLocation: "मेरी लोकेशन",
     pickFromMap: "मानचित्र से चुनें",
     improveOutput: "उत्पादन बढ़ाएँ",
-    alreadyOptimized: "आपका सेटअप पहले से ही बेहतर है ⚡",
+    alreadyOptimized: "आपका सेटअप पहले से ही बेहतर है",
     or: "या", // NEW
     units: "यूनिट",
     optimizeSetup: "मेरे सेटअप को अनुकूलित करें",

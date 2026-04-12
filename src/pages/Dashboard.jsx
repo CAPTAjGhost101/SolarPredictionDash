@@ -12,7 +12,7 @@ import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import jsPDF from "jspdf";
 import { getSolarData } from "../utils/solarWeather";
-import { Save, Download, Zap, IndianRupee, Trash2, GitCompare, MapPin, Search, Sun, BarChart3, Clock, TrendingUp, AlertTriangle, Compass } from "lucide-react";
+import { Save, Download, Zap, IndianRupee, Trash2, GitCompare, MapPin, Search, Sun, BarChart3, Clock, TrendingUp, AlertTriangle, Compass, LocateFixed, WandSparkles, Sparkles } from "lucide-react";
 import Skeleton from "../components/ui/Skeleton";
 import { db, auth } from "../firebase";
 import { collection, addDoc, getDocs, query, where, deleteDoc, doc, updateDoc } from "firebase/firestore";
@@ -601,35 +601,45 @@ export default function Dashboard() {
                 </div>
 
                 {/* ACTION BUTTONS */}
-                <div className="flex gap-2 mt-2">
+                <div className="flex flex-row md:flex-col gap-2 mt-2">
                   {/* GPS */}
                   <button
                     onClick={handleUseMyLocation}
                     className="
-  flex-1 text-xs sm:text-sm px-2 sm:px-3 py-2.5 rounded-lg
-  border border-[var(--border)]
-  hover:bg-[var(--border)]
-  transition-all
-  flex items-center justify-center gap-1 sm:gap-2
-  whitespace-nowrap
-"
+      flex-1 md:w-full
+      text-xs sm:text-sm
+      px-2 sm:px-3 md:px-2
+      py-2 md:py-1.5
+      rounded-lg
+      border border-[var(--border)]
+      hover:bg-[var(--border)]
+      transition-all
+      flex items-center justify-center gap-1 sm:gap-2
+      whitespace-nowrap
+    "
                   >
-                    📡 <span className="hidden sm:inline">{t("useMyLocation")}</span>
+                    <LocateFixed size={16} />
+                    <span className="hidden md:inline">{t("useMyLocation")}</span>
                   </button>
 
                   {/* MAP */}
                   <button
                     onClick={() => setShowMap((prev) => !prev)}
                     className="
-  flex-1 text-xs sm:text-sm px-2 sm:px-3 py-2.5 rounded-lg
-  border border-[var(--border)]
-  hover:bg-[var(--border)]
-  transition-all
-  flex items-center justify-center gap-1 sm:gap-2
-  whitespace-nowrap
-"
+      flex-1 md:w-full
+      text-xs sm:text-sm
+      px-2 sm:px-3 md:px-2
+      py-2 md:py-1.5
+      rounded-lg
+      border border-[var(--border)]
+      hover:bg-[var(--border)]
+      transition-all
+      flex items-center justify-center gap-1 sm:gap-2
+      whitespace-nowrap
+    "
                   >
-                    🗺 <span className="hidden sm:inline">{t("pickFromMap")}</span>
+                    <MapPin size={16} />
+                    <span className="hidden md:inline">{t("pickFromMap")}</span>
                   </button>
                 </div>
 
@@ -776,13 +786,19 @@ export default function Dashboard() {
     border border-[var(--primary)]
     text-[var(--primary)]
     hover:bg-[var(--primary)] hover:text-white
-    transition-all
+    transition-all flex gap-2 justify-center items-center 
   "
               >
-                ⚡ {t("optimizeSetup")}
+                <div>
+                  <WandSparkles size={18} />
+                </div>
+                <div>{t("optimizeSetup")}</div>
               </button>
 
-              <p className="text-xs text-[var(--text-muted)] mt-2">{improvementPercent > 0 ? `${t("improveOutput")} ~${improvementPercent}%` : t("alreadyOptimized")}</p>
+              <div className="text-xs text-[var(--text-muted)] mt-2 flex gap-2 justify-center items-center">
+                <span>{improvementPercent > 0 ? `${t("improveOutput")} ~${improvementPercent}%` : t("alreadyOptimized")}</span>
+                <Sparkles size={12} color="#f97316" />
+              </div>
             </div>
           </div>
         </Card>
@@ -1248,7 +1264,7 @@ export default function Dashboard() {
         {loading ? (
           <Skeleton className="w-full h-64" />
         ) : (
-          <div className="w-full overflow-x-auto">
+          <div className="w-full">
             <div className="min-w-[300px]">
               <EnergyChart data={finalChartData} />
             </div>
@@ -1256,7 +1272,7 @@ export default function Dashboard() {
         )}
       </Card>
 
-      <div className="flex gap-2 mb-3 overflow-x-auto no-scrollbar">
+      <div className="flex gap-2 mb-3">
         {[10, 25, 50, 100].map((year) => (
           <button
             key={year}
@@ -1292,8 +1308,8 @@ export default function Dashboard() {
         </div>
       )}
       <div className="flex justify-center items-center text-xs text-gray-600 mt-6">
-        <span className="mr-1">Made by</span>
-        <span className="font-medium text-gray-400 tracking-wide">Ajay Danu</span>
+        <span className="mr-1 gradient-text">Made by</span>
+        <span className="font-medium text-gray-400 tracking-wide gradient-text">Ajay Danu</span>
       </div>
     </div>
   );

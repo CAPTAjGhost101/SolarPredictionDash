@@ -86,17 +86,18 @@ export default function Home() {
       {/* CTA BUTTON */}
       <motion.button
         onClick={() => navigate("/dashboard")}
-        initial={{ scale: 0.9 }}
-        animate={
-          ctaPulse
-            ? { scale: [1, 1.04, 1] } // smooth zoom in-out
-            : { scale: 1 }
-        }
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{
+          opacity: 1,
+          scale: ctaPulse ? [1, 1.04, 1] : 1,
+        }}
         transition={{
-          delay: 0.6,
-          duration: 3,
-          repeat: Infinity,
-          ease: "easeInOut",
+          opacity: { duration: 0.6, delay: 0.6 }, // fade in once
+          scale: {
+            duration: 3,
+            repeat: Infinity,
+            ease: "easeInOut",
+          },
         }}
         className="
     mt-8 px-8 py-3 rounded-xl
@@ -122,7 +123,7 @@ export default function Home() {
               rounded-2xl p-6
               shadow-sm
               transition-all duration-300
-              hover:shadow-lg flex flex-col items-center
+              hover:shadow-lg flex flex-col items-center backdrop-blur-md bg-white/10 border border-white/20
             "
           >
             <div className="text-[var(--primary)] mb-3">{item.icon}</div>
@@ -135,8 +136,15 @@ export default function Home() {
       </motion.div>
 
       {/* MINI FEATURE STRIP */}
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }} className="mt-16 text-sm text-[var(--text-muted)]">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }} className="mt-6 text-sm text-[var(--text-muted)]">
         ✔ Real Data • ✔ ROI Insights • ✔ Compare Setups • ✔ Save & Export
+      </motion.div>
+
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2 }} className="mt-8 text-sm text-[var(--text-muted)]">
+        <div className="flex justify-center items-center text-xs text-gray-600">
+          <span className="mr-1 gradient-text">Made by</span>
+          <span className="font-medium text-gray-400 tracking-wide gradient-text">Ajay Danu</span>
+        </div>
       </motion.div>
     </div>
   );
