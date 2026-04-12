@@ -11,7 +11,7 @@ export function SettingsProvider({ children }) {
     defaultCost: 60000,
   });
 
-  // 🔥 APPLY THEME GLOBALLY
+  // APPLY THEME GLOBALLY
   useEffect(() => {
     const root = document.documentElement;
 

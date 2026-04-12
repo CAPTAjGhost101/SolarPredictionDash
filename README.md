@@ -1,78 +1,85 @@
-# ⚡ SolarPlanner v2.0 – Energy Prediction SaaS Platform
+# SolarPlanner v2.1 – Solar Energy Optimization Platform
 
-<p align="center">
-  A modern SaaS platform to plan and predict solar energy production, helping users evaluate solar plant feasibility with real-time insights, interactive visualizations, and cloud-based data storage.
-</p>
+A web-based SaaS application for planning and evaluating solar energy systems. It enables users to estimate energy generation, savings, and return on investment using location-based inputs, system configuration, and interactive data visualization.
 
 ---
 
-## 🚀 Live Demo
+## Live Demo
 
-👉 https://effulgent-pegasus-18f686.netlify.app/
+https://effulgent-pegasus-18f686.netlify.app/
 
-## 📂 Repository
+## Repository
 
-👉 https://github.com/CAPTAjGhost101/SolarPredictionDash
-
----
-
-## ✨ Overview
-
-**SolarPlanner v2.0** is a **SaaS-based solar planning and prediction platform** designed to help users make informed decisions before installing a solar plant.
-It provides **energy insights, location-based comparison, and interactive data visualization**, combined with **secure authentication and cloud data persistence**.
+https://github.com/CAPTAjGhost101/SolarPredictionDash
 
 ---
 
-## 🆕 Version
+## Overview
 
-### 🚀 v2.0 (Latest)
+SolarPlanner is designed to help users make informed decisions before installing a solar system. The platform combines energy prediction logic with an interactive interface, allowing users to analyze different configurations based on location, system size, tilt, and direction.
 
-- 🗺️ Map-based layout for location-driven analysis
-- 🔐 Google Authentication for secure user access
-- ☁️ Firestore integration for persistent cloud storage
-- 📍 Enhanced location comparison system
-- 🎛️ Interactive UI controls and improved usability
-- ✨ Smooth animations and refined UI/UX
-- 💳 Help desk & support workflows using Notion + Stripe
+It provides realistic estimates for energy production and financial outcomes, along with tools to save, compare, and export system configurations.
+
+---
+
+## Version
+
+### v2.1 (Current)
+
+- Location-based solar analysis using manual input, GPS, and map selection
+- Google Authentication for user access
+- Firestore integration for persistent storage of user data
+- Solar optimization system for tilt and direction adjustments
+- Interactive charts for energy production and financial projections
+- PDF report generation for system analysis
+- Multilingual interface (English and Hindi)
+- Dark mode support and responsive design
+- Improved UI with smoother transitions and structured layout
 
 ### v1.0
 
-- Basic dashboard with charts
-- Initial energy tracking system
+- Basic dashboard with energy estimation
+- Initial chart visualization
 
 ---
 
-## 🚀 Features
+## Features
 
-### 📊 Data & Prediction
+### Energy Prediction
 
+- Monthly and yearly energy estimation
+- Real vs estimated data comparison
+- Location-aware solar calculations
+- System efficiency, tilt, and direction-based adjustments
+
+### Financial Analysis
+
+- Monthly and yearly savings calculation
+- Payback period estimation
+- Long-term savings projection
+
+### User Functionality
+
+- Save and manage multiple solar configurations
+- Compare different setups
+- Export detailed PDF reports
+
+### Interface
+
+- Responsive design for mobile and desktop
+- Dark and light theme support
 - Interactive charts using Recharts
-- Actual vs Estimated energy comparison
-- Location-based solar analysis and insights
+- Map-based location selection
 
-### 🔐 Authentication & Cloud
+### Authentication and Storage
 
-- Google Authentication integration
-- Cloud-based storage using Firebase Firestore
-- Persistent user data across sessions
-
-### 🎨 UI / UX
-
-- Clean, modern, and minimal interface
-- Light & Dark mode support
-- Fully responsive (mobile + desktop)
-- Skeleton loading, smooth animations, and refined typography
-
-### ⚙️ Architecture & Functionality
-
-- Component-based architecture
-- Built with React Hooks (useState, useEffect)
-- Dynamic rendering and optimized state management
-- Map-integrated UI for better visualization
+- Google Sign-In using Firebase Authentication
+- Cloud storage with Firebase Firestore
+- Persistent user-specific data
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 | Category        | Technology                 |
 | --------------- | -------------------------- |
@@ -80,6 +87,7 @@ It provides **energy insights, location-based comparison, and interactive data v
 | Styling         | Tailwind CSS               |
 | Charts          | Recharts                   |
 | State Logic     | React Hooks                |
+| Maps            | Leaflet.js                 |
 | Backend/Cloud   | Firebase (Auth, Firestore) |
 | Build Tool      | Vite                       |
 | Deployment      | Netlify                    |
@@ -87,90 +95,71 @@ It provides **energy insights, location-based comparison, and interactive data v
 
 ---
 
-## 📸 Preview
+## Architecture
 
-<p align="center">
-  <img src="./public/preview.PNG" alt="SolarPlanner Preview" width="90%" />
-</p>
-
----
-
-## 🧠 Architecture
-
-```bash
 src/
- ├── components/   # Reusable UI components (charts, cards, controls)
- ├── pages/        # Main dashboard layout
- ├── hooks/        # Custom hooks
- ├── utils/        # Helper functions
- ├── assets/       # Images & icons
- └── App.jsx
-```
+├── components/ # Reusable UI components (charts, cards, controls)
+├── pages/ # Main application screens
+├── context/ # Global state (settings, theme)
+├── utils/ # Helper functions and calculations
+├── assets/ # Static resources
+└── App.jsx
 
 ---
 
-## ⚙️ Installation
+## Installation
 
-```bash
-git clone https://github.com/CAPTAjGhost101/SolarPredictionDash.git
-cd SolarPredictionDash
-npm install
+git clone https://github.com/CAPTAjGhost101/SolarPredictionDash.git  
+cd SolarPredictionDash  
+npm install  
 npm run dev
-```
 
 ---
 
-## 🌐 Deployment
+## Deployment
 
-Deployed using **Netlify** with GitHub integration for CI/CD.
+The application is deployed using Netlify with GitHub integration.
 
-```bash
 npm run build
-```
 
 ---
 
-## 💡 Key Highlights
+## Key Highlights
 
-- Built a **real-world SaaS platform for solar planning and prediction**
-- Implemented **authentication + cloud data storage using Firebase**
-- Designed a **map-integrated UI for enhanced decision-making**
-- Focused on **scalable architecture, UX, and performance optimization**
-
----
-
-## 📚 Key Learnings
-
-- Building scalable React SaaS applications
-- Integrating authentication and cloud databases
-- Designing data-driven dashboards and prediction systems
-- Enhancing UI/UX with modern frontend practices
-- Deploying and managing production-ready applications
+- Built a production-style SaaS platform for solar planning
+- Integrated authentication and cloud storage using Firebase
+- Developed a custom solar prediction and optimization system
+- Designed a responsive and user-focused interface
+- Implemented real-time interaction with charts and map-based inputs
 
 ---
 
-## 🔮 Future Improvements
+## Key Learnings
 
-- 🌍 Real-time solar & weather API integration
-- 🗺️ 3D map shading for terrain-based prediction
-- 📊 Advanced analytics & insights
-- 🔔 Smart alert system
-- 📅 Historical data tracking
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Feel free to fork and submit a pull request.
+- Building scalable React applications
+- Managing authentication and cloud databases
+- Designing data-driven interfaces
+- Improving user experience with responsive design and animations
+- Structuring frontend architecture for maintainability
 
 ---
 
-## 📄 License
+## Future Improvements
+
+- Integration with real-time solar and weather APIs
+- Advanced analytics and deeper insights
+- Historical data tracking
+- Smart notifications and alerts
+- Improved optimization models
+
+---
+
+## Contributing
+
+Contributions are welcome. Fork the repository and submit a pull request with improvements or fixes.
+
+---
+
+## License
 
 MIT License © 2026
-
----
-
-<p align="center">
-  Built as a real-world SaaS product using React, Firebase & modern web technologies ⚡
-</p>

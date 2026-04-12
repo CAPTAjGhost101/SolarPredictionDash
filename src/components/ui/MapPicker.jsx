@@ -20,7 +20,7 @@ function LocationMarker({ setLat, setLon, setLocation, onSelect }) {
 
       setPosition(e.latlng);
       setLat(lat);
-      setLon(lng); // ✅ FIX: add longitude
+      setLon(lng); // FIX: add longitude
       setLocation(`${lat.toFixed(2)}, ${lng.toFixed(2)}`); // instant feedback
       reverseGeocode(lat, lng).then((name) => {
         if (name) {
@@ -28,7 +28,7 @@ function LocationMarker({ setLat, setLon, setLocation, onSelect }) {
         }
       });
 
-      if (onSelect) onSelect(); // ✅ CLOSE MAP
+      if (onSelect) onSelect(); // CLOSE MAP
     },
   });
   return position === null ? null : <Marker position={position} />;

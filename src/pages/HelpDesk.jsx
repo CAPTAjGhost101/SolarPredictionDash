@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function HelpDesk() {
   const [search, setSearch] = useState("");
@@ -21,19 +22,39 @@ export default function HelpDesk() {
     },
     {
       q: "How are savings calculated?",
-      a: "Savings = Energy generated × electricity rate (₹/kWh).",
+      a: "Savings are calculated using the formula: Energy generated × electricity rate (₹/kWh). This gives an estimate of monthly and yearly savings.",
     },
     {
       q: "What is tilt angle?",
-      a: "Tilt is the angle of your solar panel. Optimal tilt improves sunlight capture and efficiency.",
+      a: "Tilt is the angle of your solar panel. Adjusting tilt closer to your latitude improves sunlight capture and increases efficiency.",
     },
     {
       q: "What is panel direction (azimuth)?",
-      a: "It is the direction your panel faces. In India, south-facing panels give the best performance.",
+      a: "Azimuth is the direction your panel faces. In India, south-facing panels provide the best performance.",
     },
     {
-      q: "On-grid vs Off-grid",
-      a: "On-grid systems send excess electricity to the grid. Off-grid systems store energy in batteries.",
+      q: "How accurate are the predictions?",
+      a: "Predictions are based on solar irradiance models, system efficiency, tilt, and direction. They provide realistic estimates but may vary due to weather and installation quality.",
+    },
+    {
+      q: "What is Optimize My Setup?",
+      a: "This feature automatically adjusts tilt and direction to optimal values based on your location to improve energy output and savings.",
+    },
+    {
+      q: "How does location selection work?",
+      a: "You can enter a city manually, use your current location (GPS), or select a point on the map. The system uses this to estimate solar potential.",
+    },
+    {
+      q: "What is payback period?",
+      a: "Payback period is the time required to recover your solar system cost from savings. It is calculated using total system cost and yearly savings.",
+    },
+    {
+      q: "Can I save and compare setups?",
+      a: "Yes, you can save multiple solar configurations and compare their performance, savings, and payback period.",
+    },
+    {
+      q: "What does the PDF report include?",
+      a: "The report includes system details, energy production, savings, and financial analysis in a clean, shareable format.",
     },
   ];
 
@@ -111,11 +132,27 @@ export default function HelpDesk() {
           <h2 className="text-lg font-semibold">How to use</h2>
 
           <ol className="text-sm text-[var(--text-muted)] space-y-2 list-decimal list-inside">
-            <li>Enter location or select from map</li>
-            <li>Adjust system size and usage</li>
-            <li>View charts and savings</li>
-            <li>Save and compare setups</li>
+            <li>Enter your location manually, use GPS, or select from the map</li>
+            <li>Adjust system size, electricity rate, and monthly usage</li>
+            <li>Optimize tilt and direction using the optimization feature</li>
+            <li>Analyze energy production and savings through charts</li>
+            <li>Save configurations and compare different setups</li>
+            <li>Export a detailed PDF report for future reference</li>
           </ol>
+        </div>
+
+        {/* FEATURES OVERVIEW */}
+        <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 space-y-3 shadow-sm">
+          <h2 className="text-lg font-semibold">Features Overview</h2>
+
+          <ul className="text-sm text-[var(--text-muted)] space-y-2 list-disc list-inside">
+            <li>Location-based solar energy estimation</li>
+            <li>Real-time optimization of panel tilt and direction</li>
+            <li>Interactive charts for production and savings</li>
+            <li>Cloud-based saving of user configurations</li>
+            <li>Multi-language and dark mode support</li>
+            <li>Professional PDF export reports</li>
+          </ul>
         </div>
 
         {/* FAQ */}
@@ -132,15 +169,23 @@ export default function HelpDesk() {
                 border border-[var(--border)]
                 rounded-xl p-4 bg-[var(--card)]
                 cursor-pointer transition-all
-                hover:shadow-md hover:scale-[1.01]
+                hover:shadow-md hover:scale-[1.01] active:scale-[0.99]
               "
             >
               <div className="flex justify-between">
                 <p className="font-medium">{highlightText(item.q)}</p>
-                <span>{openIndex === index ? "−" : "+"}</span>
+                <motion.span animate={{ rotate: openIndex === index ? 45 : 0 }} transition={{ duration: 0.2 }}>
+                  +
+                </motion.span>
               </div>
 
-              {openIndex === index && <p className="text-sm text-[var(--text-muted)] mt-3">{highlightText(item.a)}</p>}
+              <AnimatePresence initial={false}>
+                {openIndex === index && (
+                  <motion.div key="content" initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3, ease: "easeInOut" }} className="overflow-hidden">
+                    <p className="text-sm text-[var(--text-muted)] mt-3">{highlightText(item.a)}</p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           ))}
         </div>

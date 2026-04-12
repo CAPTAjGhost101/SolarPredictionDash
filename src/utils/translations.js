@@ -118,6 +118,7 @@ export const translations = {
     units: "Units",
     optimizeSetup: "Optimize My Setup",
     systemDefault: "System Default",
+    settings: "Settings",
     preferences: "Preferences",
     language: "Language",
     english: "English",

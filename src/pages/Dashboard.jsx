@@ -68,7 +68,7 @@ export default function Dashboard() {
   const [toast, setToast] = useState(null);
   const { settings } = useSettings();
 
-  //helper for Settings
+  //Helper for Settings
   const currencySymbol = settings.currency === "INR" ? "₹" : "$";
   const unitLabel = settings.unit === "kwh" ? "kwh" : "Units";
 
@@ -107,7 +107,7 @@ export default function Dashboard() {
     }, 2500);
   };
 
-  //SEARCH
+  //Search
   const handleSearch = (value) => {
     setLocation(value);
 
@@ -181,7 +181,7 @@ export default function Dashboard() {
     return `linear-gradient(to right, hsl(${hue}, 80%, 50%), hsl(${hue}, 80%, 60%))`;
   }
 
-  // FIREBASE CLOUD (OLDER - LOCAL STORAGE FUNCTION)
+  // FIREBASE CLOUD (OLDER TO LOCAL STORAGE FUNCTION)
 
   const handleSaveLocation = async () => {
     if (!auth.currentUser) {
@@ -301,7 +301,7 @@ export default function Dashboard() {
 
     let y = 20;
 
-    // 🔥 HEADER BAR
+    // HEADER BAR
     doc.setFillColor(255, 115, 0);
     doc.rect(0, 0, 210, 25, "F");
 
@@ -322,7 +322,7 @@ export default function Dashboard() {
 
     doc.setTextColor(0);
 
-    // 🔥 CARD FUNCTION
+    // CARD FUNCTION
     const drawCard = (title, lines) => {
       y += 12;
 
@@ -343,13 +343,13 @@ export default function Dashboard() {
       y += 30;
     };
 
-    // 🔥 SYSTEM
+    // SYSTEM
     drawCard("System Details", [`Location: ${location}`, `System Size: ${systemSize} kW`, `Electricity Rate: ₹${rate}/kWh`]);
 
-    // 🔥 PERFORMANCE
+    // PERFORMANCE
     drawCard("Performance", [`Monthly Output: ${monthlyAvg} kWh`, `Yearly Output: ${yearlyTotal} kWh`, `Coverage: ${coverage}%`]);
 
-    // 🔥 FINANCIAL
+    // FINANCIAL
     drawCard("Financial Analysis", [`Monthly Savings: ₹${roi.monthlySavings}`, `Yearly Savings: ₹${roi.yearlySavings}`, `Payback: ${roi.paybackYears} years`]);
 
     // FOOTER
@@ -477,45 +477,61 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="p-8 space-y-10 max-w-7xl mx-auto">
+    <div className="md:p-8 p-4 sm:p-6 space-y-10 max-w-7xl mx-auto">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* INPUT PANEL */}
         <Card className="transition-all duration-300 hover:-translate-y-[2px] hover:shadow-lg">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold tracking-tight flex items-center gap-2">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+            {/* TITLE */}
+            <h2 className="text-base sm:text-lg font-semibold tracking-tight flex items-center gap-2">
               <Sun size={18} />
-              {t("solarSetup")}
+              <span className="truncate">{t("solarSetup")}</span>
             </h2>
 
-            <div className="flex gap-2">
+            {/* BUTTONS */}
+            <div className="flex sm:flex-row gap-2 w-full sm:w-auto">
               <button
                 onClick={handleSaveLocation}
                 disabled={saving}
                 className={`
-    px-3 py-2 rounded-lg text-white flex items-center gap-2
-    transition-all
-    ${saving ? "bg-gray-400 cursor-not-allowed" : "bg-[var(--primary)] hover:opacity-90 active:scale-[0.97]"}
-  `}
+        w-full sm:w-auto
+        px-3 py-2 rounded-lg text-white
+        flex items-center justify-center gap-2
+        text-sm font-medium
+        transition-all
+        ${saving ? "bg-gray-400 cursor-not-allowed" : "bg-[var(--primary)] hover:opacity-90 active:scale-[0.97]"}
+      `}
               >
                 {saving ? (
                   t("saving")
                 ) : (
                   <>
-                    {" "}
-                    <Save size={16} /> {t("save")}{" "}
+                    <Save size={16} />
+                    <span>{t("save")}</span>
                   </>
                 )}
               </button>
 
-              <button onClick={handleExport} className="px-3 py-2 rounded-lg bg-green-600 text-white flex items-center gap-2 hover:opacity-90 active:scale-[0.97] active:shadow-inner transition-all">
+              <button
+                onClick={handleExport}
+                className="
+        w-full sm:w-auto
+        px-3 py-2 rounded-lg
+        bg-green-600 text-white
+        flex items-center justify-center gap-2
+        text-sm font-medium
+        hover:opacity-90 active:scale-[0.97]
+        transition-all
+      "
+              >
                 <Download size={16} />
-                {t("export")}
+                <span>{t("export")}</span>
               </button>
             </div>
           </div>
 
           {/* System Type */}
-          <div className="flex items-center gap-3 mb-6">
+          <div className="flex flex-wrap items-center gap-2 mb-6">
             <label className="text-sm text-[var(--text-muted)]">{t("systemType")}</label>
 
             <button onClick={() => setIsOnGrid(true)} className={`px-3 py-1 rounded-lg ${isOnGrid ? "bg-[var(--primary)] text-white" : "border border-[var(--border)]"} active:scale-[0.97] active:shadow-inner`}>
@@ -564,7 +580,7 @@ export default function Dashboard() {
                       }
                     }}
                     className="input mt-1 flex-1"
-                    placeholder={t("searchCity")} // FIXED key
+                    placeholder={t("searchCity")}
                   />
 
                   {/* SEARCH BUTTON */}
@@ -584,32 +600,36 @@ export default function Dashboard() {
                   </button>
                 </div>
 
-                {/* ACTION BUTTONS (NEW CLEAN ROW) */}
+                {/* ACTION BUTTONS */}
                 <div className="flex gap-2 mt-2">
                   {/* GPS */}
                   <button
                     onClick={handleUseMyLocation}
                     className="
-        flex-1 text-xs px-3 py-2 rounded-lg
-        border border-[var(--border)]
-        hover:bg-[var(--border)]
-        transition-all flex items-center justify-center gap-1
-      "
+  flex-1 text-xs sm:text-sm px-2 sm:px-3 py-2.5 rounded-lg
+  border border-[var(--border)]
+  hover:bg-[var(--border)]
+  transition-all
+  flex items-center justify-center gap-1 sm:gap-2
+  whitespace-nowrap
+"
                   >
-                    📡 {t("useMyLocation")}
+                    📡 <span className="hidden sm:inline">{t("useMyLocation")}</span>
                   </button>
 
                   {/* MAP */}
                   <button
                     onClick={() => setShowMap((prev) => !prev)}
                     className="
-        flex-1 text-xs px-3 py-2 rounded-lg
-        border border-[var(--border)]
-        hover:bg-[var(--border)]
-        transition-all flex items-center justify-center gap-1
-      "
+  flex-1 text-xs sm:text-sm px-2 sm:px-3 py-2.5 rounded-lg
+  border border-[var(--border)]
+  hover:bg-[var(--border)]
+  transition-all
+  flex items-center justify-center gap-1 sm:gap-2
+  whitespace-nowrap
+"
                   >
-                    🗺 {t("pickFromMap")}
+                    🗺 <span className="hidden sm:inline">{t("pickFromMap")}</span>
                   </button>
                 </div>
 
@@ -771,11 +791,11 @@ export default function Dashboard() {
         <Card className="transition-all duration-300 hover:-translate-y-[2px] hover:shadow-lg">
           <h2 className="text-lg font-semibold mb-4 tracking-tight">{t("savedLocations")}</h2>
           {/* FILTER PILLS */}
-          <div className="flex gap-2 mb-3">
+          <div className="flex gap-2 mb-3 overflow-x-auto no-scrollbar">
             <button
               onClick={() => setSortBy("savings")}
               className={`
-      px-3 py-1 rounded-full text-sm border transition-all duration-150
+      px-3 py-1 rounded-full text-xs border whitespace-nowrap transition-all duration-150
       ${sortBy === "savings" ? "bg-[var(--primary)] text-white hover:opacity-90" : "border-[var(--border)] active:scale-[0.97] active:shadow-inner"}
     `}
             >
@@ -788,7 +808,7 @@ export default function Dashboard() {
             <button
               onClick={() => setSortBy("output")}
               className={`
-      px-3 py-1 rounded-full text-sm border transition-all duration-150
+      px-3 py-1 rounded-full text-xs whitespace-nowrap border transition-all duration-150
       ${sortBy === "output" ? "bg-[var(--primary)] text-white hover:opacity-90" : "border-[var(--border)] active:scale-[0.97] active:shadow-inner"}
     `}
             >
@@ -801,7 +821,7 @@ export default function Dashboard() {
             <button
               onClick={() => setSortBy("payback")}
               className={`
-      px-3 py-1 rounded-full text-sm border transition-all duration-150
+      px-3 py-1 rounded-full text-xs border whitespace-nowrap transition-all duration-150
       ${sortBy === "payback" ? "bg-[var(--primary)] text-white hover:opacity-90" : "border-[var(--border)] active:scale-[0.97] active:shadow-inner"}
     `}
             >
@@ -1184,12 +1204,12 @@ export default function Dashboard() {
       </div>
 
       {/* CHART */}
-      <Card className="transition-all duration-300 hover:-translate-y-[2px] hover:shadow-lg">
-        <div className="flex gap-2 mb-3">
+      <Card className="transition-all duration-300 hover:-translate-y-[2px] hover:shadow-lg p-4 sm:p-6">
+        <div className="flex gap-2 mb-3 overflow-x-auto no-scrollbar">
           <button
             onClick={() => setDataMode("real")}
             className={`
-      px-3 py-1 rounded-full text-xs border transition-all duration-150
+      px-3 py-1 rounded-full text-xs border transition-all duration-150 whitespace-nowrap flex items-center gap-1
       ${dataMode === "real" ? "bg-[var(--primary)] text-white hover:opacity-90" : "border-[var(--border)] active:scale-[0.97] active:shadow-inner"}
     `}
           >
@@ -1202,7 +1222,7 @@ export default function Dashboard() {
           <button
             onClick={() => setDataMode("estimated")}
             className={`
-      px-3 py-1 rounded-full text-xs border transition-all duration-150
+      px-3 py-1 rounded-full text-xs border transition-all duration-150 whitespace-nowrap flex items-center gap-1
       ${dataMode === "estimated" ? "bg-[var(--primary)] text-white hover:opacity-90" : "border-[var(--border)] active:scale-[0.97] active:shadow-inner"}
     `}
           >
@@ -1213,9 +1233,9 @@ export default function Dashboard() {
           </button>
         </div>
         <p className="text-xs text-[var(--text-muted)] mb-2">{dataMode === "real" ? t("realHint") : t("estimatedHint")}</p>
-        <h2 className="text-lg font-semibold mb-4 tracking-tight">{t("solarProduction")}</h2>
+        <h2 className="text-base sm:text-lg font-semibold mb-4 tracking-tight">{t("solarProduction")}</h2>
 
-        <div className="flex justify-between items-center mb-3">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 mb-3">
           <p className="text-sm text-[var(--text-muted)]">
             {t("monthlyGeneration")} ({unitLabel})
           </p>
@@ -1225,16 +1245,24 @@ export default function Dashboard() {
           </p>
         </div>
 
-        {loading ? <Skeleton className="w-full h-64" /> : <EnergyChart data={finalChartData} />}
+        {loading ? (
+          <Skeleton className="w-full h-64" />
+        ) : (
+          <div className="w-full overflow-x-auto">
+            <div className="min-w-[300px]">
+              <EnergyChart data={finalChartData} />
+            </div>
+          </div>
+        )}
       </Card>
 
-      <div className="flex gap-2 mb-3">
+      <div className="flex gap-2 mb-3 overflow-x-auto no-scrollbar">
         {[10, 25, 50, 100].map((year) => (
           <button
             key={year}
             onClick={() => setYearsRange(year)}
             className={`
-        px-3 py-1 rounded-full text-xs border transition-all duration-150
+        px-3 py-1 rounded-full text-xs border transition-all duration-150 whitespace-nowrap flex items-center gap-1
         ${yearsRange === year ? "bg-[var(--primary)] text-white scale-[1.05]" : "border-[var(--border)] hover:opacity-90 active:scale-[0.97] active:shadow-inner"}
       `}
           >
@@ -1263,9 +1291,9 @@ export default function Dashboard() {
           {toast.message}
         </div>
       )}
-      <div className="flex justify-center items-center text-xs text-gray-400 mt-6">
+      <div className="flex justify-center items-center text-xs text-gray-600 mt-6">
         <span className="mr-1">Made by</span>
-        <span className="font-medium text-gray-600 tracking-wide">Ajay Danu</span>
+        <span className="font-medium text-gray-400 tracking-wide">Ajay Danu</span>
       </div>
     </div>
   );

@@ -25,14 +25,7 @@ export function getSunHoursFromLatitude(lat) {
 }
 
 // The below code performs the ROI funtion
-export function calculateAdvancedROI({
-  systemSize,
-  rate,
-  monthlyEnergy,
-  usage,
-  isOnGrid,
-  totalCost, // ✅ NEW
-}) {
+export function calculateAdvancedROI({ systemSize, rate, monthlyEnergy, usage, isOnGrid, totalCost }) {
   const usedEnergy = Math.min(monthlyEnergy, usage);
   const surplusEnergy = Math.max(0, monthlyEnergy - usage);
 
@@ -40,7 +33,7 @@ export function calculateAdvancedROI({
 
   const yearlySavings = monthlySavings * 12;
 
-  // ✅ PAYBACK FIX
+  // PAYBACK
   const paybackYears = yearlySavings > 0 ? (totalCost / yearlySavings).toFixed(1) : 0;
 
   const paybackMonths = Math.round(paybackYears * 12);
@@ -56,7 +49,7 @@ export function calculateAdvancedROI({
   };
 }
 
-// calculating energy on the basis of months/year
+// Calculating energy on the basis of months/year
 export function calculateMonthlyEnergy(systemSize = 1, lat = 28.6, azimuth = 180, tilt = 25) {
   const baseEfficiency = 0.75;
 

@@ -1,14 +1,46 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Sun, TrendingUp, Zap, IndianRupee, Lightbulb } from "lucide-react";
+import CountUp from "react-countup";
+import { useEffect, useState } from "react";
 
 export default function Home() {
+  const [glowSun, setGlowSun] = useState(false);
+  const [glowText, setGlowText] = useState(false);
+  const [ctaPulse, setCtaPulse] = useState(false);
+  useEffect(() => {
+    const t1 = setTimeout(() => setGlowSun(true), 300);
+    const t2 = setTimeout(() => setGlowText(true), 900);
+    const t3 = setTimeout(() => setCtaPulse(true), 1600);
+
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+    };
+  }, []);
   const navigate = useNavigate();
 
   const stats = [
-    { icon: <Zap />, label: "Energy Generated", value: "1200+ kWh" },
-    { icon: <IndianRupee />, label: "Savings", value: "₹8,000/mo" },
-    { icon: <TrendingUp />, label: "ROI", value: "3-5 yrs" },
+    {
+      icon: <Zap />,
+      label: "Energy Generated",
+      value: 1200,
+      suffix: "+ kWh",
+    },
+    {
+      icon: <IndianRupee />,
+      label: "Savings",
+      value: 8000,
+      prefix: "₹",
+      suffix: "/mo",
+    },
+    {
+      icon: <TrendingUp />,
+      label: "ROI",
+      value: 3,
+      suffix: "-5 yrs",
+    },
   ];
 
   return (
@@ -20,11 +52,28 @@ export default function Home() {
 
       {/* ICON */}
       <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }}>
-        <Sun size={60} className="text-[var(--primary)] mb-4" />
+        <Sun
+          size={60}
+          className={`
+    text-[var(--primary)] mb-4
+    transition-all duration-700
+    ${glowSun ? "drop-shadow-[0_0_25px_rgba(245,158,11,0.8)] scale-110" : ""}
+  `}
+        />
       </motion.div>
 
       {/* TITLE */}
-      <motion.h1 initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight flex items-center gap-2 sm:gap-3 flex-wrap">
+      <motion.h1
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className={`
+  text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight
+  flex items-center gap-2 sm:gap-3 flex-wrap
+  transition-all duration-700
+  ${glowText ? "drop-shadow-[0_0_10px_rgba(245,158,11,0.25)]" : ""}
+`}
+      >
         <span>Plan Solar Smarter</span>
         <Lightbulb className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" />
       </motion.h1>
@@ -37,18 +86,26 @@ export default function Home() {
       {/* CTA BUTTON */}
       <motion.button
         onClick={() => navigate("/dashboard")}
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.6 }}
+        initial={{ scale: 0.9 }}
+        animate={
+          ctaPulse
+            ? { scale: [1, 1.04, 1] } // smooth zoom in-out
+            : { scale: 1 }
+        }
+        transition={{
+          delay: 0.6,
+          duration: 3,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
         className="
-          mt-8 px-8 py-3 rounded-xl
-          bg-[var(--primary)] text-white
-          font-medium text-lg
-          shadow-lg
-          hover:scale-[1.07] hover:shadow-xl
-          active:scale-[0.97]
-          transition-all duration-200
-        "
+    mt-8 px-8 py-3 rounded-xl
+    bg-[var(--primary)] text-white
+    font-medium text-lg
+    shadow-lg
+    hover:scale-[1.07] hover:shadow-xl
+    active:scale-[0.97]
+  "
       >
         Go to Dashboard
       </motion.button>
@@ -70,14 +127,16 @@ export default function Home() {
           >
             <div className="text-[var(--primary)] mb-3">{item.icon}</div>
             <p className="text-sm text-[var(--text-muted)]">{item.label}</p>
-            <h3 className="text-xl font-semibold mt-1">{item.value}</h3>
+            <h3 className="text-xl font-semibold mt-1">
+              <CountUp end={item.value} duration={3} separator="," prefix={item.prefix || ""} suffix={item.suffix || ""} />
+            </h3>
           </motion.div>
         ))}
       </motion.div>
 
       {/* MINI FEATURE STRIP */}
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }} className="mt-16 text-sm text-[var(--text-muted)]">
-        ✔ Real data • ✔ ROI insights • ✔ Compare setups • ✔ Save & export
+        ✔ Real Data • ✔ ROI Insights • ✔ Compare Setups • ✔ Save & Export
       </motion.div>
     </div>
   );
